@@ -1,4 +1,6 @@
 TwilioApp::Application.routes.draw do
+  match '/sms', to: 'receive_text#index', via: 'post'
+  match '/send_message', to: 'text_sender#send_text_message', via: 'post'
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 
