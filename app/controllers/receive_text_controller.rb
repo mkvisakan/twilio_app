@@ -57,14 +57,19 @@ class ReceiveTextController < ApplicationController
           url_open = open(URI::encode(google_api_url))
           json_obj = JSON.load(url_open)
 
-          for elt in json_obj["routes"][0]["legs"][0]["steps"]
-             if elt["travel_mode"] == "TRANSIT"
-                 txt_contents << "#{elt['transit_details']['line']['short_name']} #{elt['html_instructions']} at #{elt['transit_details']['arrival_time']['text']}"
-                 txt_contents << "Get down at #{elt['transit_details']['arrival_stop']['name']}"
-             elsif elt["travel_mode"] == "WALKING"
-                 txt_contents << elt["html_instructions"]
-             end
-         end
+
+          if json_obj.include?("routes") && json_obj["routes"].any?
+              for elt in json_obj["routes"][0]["legs"][0]["steps"]
+                 if elt["travel_mode"] == "TRANSIT"
+                     txt_contents << "#{elt['transit_details']['line']['short_name']} #{elt['html_instructions']} at #{elt['transit_details']['arrival_time']['text']}"
+                     txt_contents << "Get down at #{elt['transit_details']['arrival_stop']['name']}"
+                 elsif elt["travel_mode"] == "WALKING"
+                     txt_contents << elt["html_instructions"]
+                 end
+              end
+          else
+              txt_contents << "Unidentified START / DEST location. Please try another location text. Try adding the city / state information."
+          end
       else
           txt_contents << "Invalid message format. Message Format should be STOP:1101 BUS:05."
       end
@@ -84,12 +89,15 @@ class ReceiveTextController < ApplicationController
          url_open = open(sms_api_url)
          json_obj = JSON.load(url_open)
  
-         for elt in json_obj["stop"]["route"]
-             if bus_nos.include? elt['routeID'].to_i
-                txt_contents << "BUS #{elt['routeID']} towards #{elt['destination']} arrives at #{elt['arrivalTime']}\n"
+         if json_obj.include? "stop"
+             for elt in json_obj["stop"]["route"]
+                 if bus_nos.include? elt['routeID'].to_i
+                    txt_contents << "BUS #{elt['routeID']} towards #{elt['destination']} arrives at #{elt['arrivalTime']}\n"
+                 end
              end
+         else
+          txt_contents << "Unidentified Stop. Please try with the correct stop Id."
          end
-
       else
           txt_contents << "Invalid message format. Message Format should be STOP:1101 BUS:05."
       end
