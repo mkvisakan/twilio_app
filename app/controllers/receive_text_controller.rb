@@ -16,9 +16,9 @@ class ReceiveTextController < ApplicationController
        txt_contents = ["Invalid Message Format !!!", "STOP:1101 BUS:05", "START:2110, University avenue, madison DEST:Computer sciences and statistics, madison"]
     end
 
-    txt_msg = "\n#{txt_contents.join('\n')}"
+    txt_msg = txt_contents.join('.')
 
-    msg_list = txt_msg.chars.each_slice(160).map(&:join)
+    msg_list = txt_msg.chars.each_slice(120).map(&:join)
 
     twilio_sid = 'AC15a225ec77a2891ead8403d67723d2d0'
     twilio_token = "f1bffe6a8d0a28e9b6068a983cb3a99b"
@@ -27,13 +27,18 @@ class ReceiveTextController < ApplicationController
     puts "Sending Msg to #{from_number}..."
     @twilio_client = Twilio::REST::Client.new twilio_sid, twilio_token
    
+    counter = 1
+    num_msgs = msg_list.length
     for send_msg in msg_list
+        send_msg += "::Msg - #{counter}/#{num_msgs}"
 
         @twilio_client.account.sms.messages.create(
           :from => "+1#{twilio_phone_number}",
           :to => from_number ,
           :body => send_msg
         )
+  
+        counter += 1
 
     end
 
@@ -61,7 +66,7 @@ class ReceiveTextController < ApplicationController
              end
          end
       else
-          txt_contents << "Invalid message format.\n Message Format should be STOP:1101 BUS:05."
+          txt_contents << "Invalid message format. Message Format should be STOP:1101 BUS:05."
       end
       return txt_contents
   end
@@ -86,7 +91,7 @@ class ReceiveTextController < ApplicationController
          end
 
       else
-          txt_contents << "Invalid message format.\n Message Format should be STOP:1101 BUS:05."
+          txt_contents << "Invalid message format. Message Format should be STOP:1101 BUS:05."
       end
       return txt_contents
   end
