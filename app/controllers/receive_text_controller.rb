@@ -3,49 +3,53 @@ require 'json'
 
 class ReceiveTextController < ApplicationController
   def index
-    msg = params["Body"]
-    from_number = params["From"]
+    begin
+        msg = params["Body"]
+        from_number = params["From"]
 
-    msg = msg.strip()
+        msg = msg.strip()
 
-    #log input
-    logger.info ">>>>>LOG_INFORMATION : #{from_number} : #{msg}"
+        #log input
+        logger.info ">>>>>LOG_INFORMATION : #{from_number} : #{msg}"
     
-    if msg.start_with?('STOP:')
-       txt_contents = get_arrival_time_from_sms_api(msg)
-    elsif msg.start_with?('START:')
-       txt_contents = get_directions_from_google_api(msg)
-    else
-       txt_contents = ["Invalid Message Format !!!", "STOP:1101 BUS:05", "START:2110, University avenue, madison DEST:Computer sciences and statistics, madison"]
-    end
+        if msg.start_with?('STOP:')
+           txt_contents = get_arrival_time_from_sms_api(msg)
+        elsif msg.start_with?('START:')
+           txt_contents = get_directions_from_google_api(msg)
+        else
+           txt_contents = ["Invalid Message Format !!!", "STOP:1101 BUS:05", "START:2110, University avenue, madison DEST:Computer sciences and statistics, madison"]
+        end
 
-    txt_msg = txt_contents.join('.')
+        txt_msg = txt_contents.join('.')
 
-    msg_list = txt_msg.chars.each_slice(120).map(&:join)
+        msg_list = txt_msg.chars.each_slice(120).map(&:join)
 
-    twilio_sid = 'AC15a225ec77a2891ead8403d67723d2d0'
-    twilio_token = "f1bffe6a8d0a28e9b6068a983cb3a99b"
-    twilio_phone_number = "6082162484"
+        twilio_sid = 'AC15a225ec77a2891ead8403d67723d2d0'
+        twilio_token = "f1bffe6a8d0a28e9b6068a983cb3a99b"
+        twilio_phone_number = "6082162484"
 
-    logger.info ">>>>>LOG_INFORMATION : Sending Msg to #{from_number}..."
-    @twilio_client = Twilio::REST::Client.new twilio_sid, twilio_token
+        logger.info ">>>>>LOG_INFORMATION : Sending Msg to #{from_number}..."
+        @twilio_client = Twilio::REST::Client.new twilio_sid, twilio_token
    
-    counter = 1
-    num_msgs = msg_list.length
-    for send_msg in msg_list
-        send_msg += "::Msg - #{counter}/#{num_msgs}"
+        counter = 1
+        num_msgs = msg_list.length
+        for send_msg in msg_list
+            send_msg += "::Msg - #{counter}/#{num_msgs}"
 
-        @twilio_client.account.sms.messages.create(
-          :from => "+1#{twilio_phone_number}",
-          :to => from_number ,
-          :body => send_msg
-        )
+            @twilio_client.account.sms.messages.create(
+              :from => "+1#{twilio_phone_number}",
+              :to => from_number ,
+              :body => send_msg
+            )
   
-        counter += 1
+            counter += 1
+        end
+    rescue
+         logger.info ">>>>>LOG_INFORMATION : CRASH ERROR : #{$!}"
 
+    ensure
+        render text: "Thank you! You will receive an SMS shortly with bus timings."
     end
-
-    render text: "Thank you! You will receive an SMS shortly with bus timings."
 
   end
 
