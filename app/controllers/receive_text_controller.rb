@@ -26,9 +26,14 @@ class ReceiveTextController < ApplicationController
 
         msg_list = txt_msg.chars.each_slice(120).map(&:join)
 
-        twilio_sid = 'AC15a225ec77a2891ead8403d67723d2d0'
-        twilio_token = "f1bffe6a8d0a28e9b6068a983cb3a99b"
-        twilio_phone_number = "6082162484"
+        #twilio_sid = 'AC15a225ec77a2891ead8403d67723d2d0'
+        #twilio_token = "f1bffe6a8d0a28e9b6068a983cb3a99b"
+        #twilio_phone_number = "6082162484"
+
+        twilio_sid = 'ACcf265d65051471141a150267c117ab82'
+        twilio_token = "5979bf88a02f53246d2700f0dc6e02ac"
+        twilio_phone_number = "2625330030"
+        
 
         logger.info ">>>>>LOG_INFORMATION : Sending Msg to #{from_number}..."
         @twilio_client = Twilio::REST::Client.new twilio_sid, twilio_token
