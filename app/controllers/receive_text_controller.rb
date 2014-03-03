@@ -16,8 +16,10 @@ class ReceiveTextController < ApplicationController
            txt_contents = get_arrival_time_from_sms_api(msg)
         elsif msg.start_with?('START:')
            txt_contents = get_directions_from_google_api(msg)
+        elsif msg.start_with?('NEARBY:')
+           txt_contents = get_nearby_from_google_api(msg)
         else
-           txt_contents = ["Invalid Message Format !!!", "STOP:1101 BUS:05", "START:2110, University avenue, madison DEST:Computer sciences and statistics, madison"]
+           txt_contents = ["Invalid Message Format !!!", "STOP:1101 BUS:05", "START:2110, University avenue, madison DEST:Computer sciences and statistics, madison, NEARBY: restaurants nearby 2100 university avenue madison"]
         end
 
         txt_msg = txt_contents.join('.')
@@ -53,6 +55,35 @@ class ReceiveTextController < ApplicationController
 
   end
 
+
+  def get_nearby_from_google_api(msg="")
+      logger.info ">>>>>LOG_INFORMATION : Getting nearby results from google API..."
+      txt_contents = []
+      msg_contents = msg.split('NEARBY:')[1].strip()
+      google_api_url = "https://maps.googleapis.com/maps/api/place/textsearch/json?query=#{msg_contents}&sensor=true&opennow&key=AIzaSyDvHC2dZhR9I0uMBtLxp0Bq1qulebuTRQY"
+      logger.info ">>>>>LOG_INFORMATION : URL: #{URI::encode(google_api_url)}"
+      url_open = open(URI::encode(google_api_url))
+      json_obj = JSON.load(url_open)
+      #logger.info ">>>>>LOG_INFORMATION : JSON_RESULT: #{json_obj}"
+
+      if json_obj.include?("results") && json_obj["results"].any?
+          json_results = json_obj["results"]
+          counter = 0
+          for elt in json_results
+              counter += 1
+              if counter > 5
+                  break
+              end
+              txt_contents << "(#{counter}) #{elt["name"]} at #{elt["formatted_address"]} rated #{elt["rating"]}"
+          end
+      else
+          txt_contents << "Invalid message format. Message Format should be NEARBY: <text>"
+      end
+      return txt_contents
+  end
+      
+
+
   def get_directions_from_google_api(msg="")
       logger.info ">>>>>LOG_INFORMATION : Getting directions from google API..."
       txt_contents = []
@@ -81,7 +112,7 @@ class ReceiveTextController < ApplicationController
           end
       else
           logger.info ">>>>>LOG_INFORMATION : ERROR : Invalid format : #{msg}"
-          txt_contents << "Invalid message format. Message Format should be STOP:1101 BUS:05."
+          txt_contents << "Invalid message format. Message Format should be START: <text> DEST: <text>"
       end
       return txt_contents
   end
