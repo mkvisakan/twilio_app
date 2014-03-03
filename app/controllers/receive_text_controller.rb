@@ -7,7 +7,7 @@ class ReceiveTextController < ApplicationController
         msg = params["Body"]
         from_number = params["From"]
 
-        msg = msg.strip()
+        msg = msg.strip().upcase
 
         #log input
         logger.info ">>>>>LOG_INFORMATION : #{from_number} : #{msg}"
