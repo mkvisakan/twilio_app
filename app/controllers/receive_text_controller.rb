@@ -16,15 +16,15 @@ class ReceiveTextController < ApplicationController
            txt_contents = get_arrival_time_from_sms_api(msg)
         elsif msg.start_with?('START:')
            txt_contents = get_directions_from_google_api(msg)
-        elsif msg.start_with?('NEARBY:')
+        elsif msg.start_with?('FIND:')
            txt_contents = get_nearby_from_google_api(msg)
         else
-           txt_contents = ["Invalid Message Format !!!", "STOP:1101 BUS:05", "START:2110, University avenue, madison DEST:Computer sciences and statistics, madison, NEARBY: restaurants nearby 2100 university avenue madison"]
+           txt_contents = ["Invalid Message Format !!!", "STOP:1101 BUS:05", "START:2110, University avenue, madison DEST:Computer sciences and statistics, madison, FIND: restaurants nearby 2100 university avenue madison"]
         end
 
         txt_msg = txt_contents.join('.')
 
-        msg_list = txt_msg.chars.each_slice(120).map(&:join)
+       # msg_list = txt_msg.chars.each_slice(120).map(&:join)
 
         #twilio_sid = 'AC15a225ec77a2891ead8403d67723d2d0'
         #twilio_token = "f1bffe6a8d0a28e9b6068a983cb3a99b"
@@ -34,23 +34,14 @@ class ReceiveTextController < ApplicationController
         twilio_token = "5979bf88a02f53246d2700f0dc6e02ac"
         twilio_phone_number = "2625330030"
         
-
         logger.info ">>>>>LOG_INFORMATION : Sending Msg to #{from_number}..."
         @twilio_client = Twilio::REST::Client.new twilio_sid, twilio_token
-   
-        counter = 1
-        num_msgs = msg_list.length
-        for send_msg in msg_list
-            send_msg += "::Msg - #{counter}/#{num_msgs}"
-
-            @twilio_client.account.sms.messages.create(
+     @twilio_client.account.messages.create(
               :from => "+1#{twilio_phone_number}",
               :to => from_number ,
-              :body => send_msg
+              :body => txt_msg
             )
-  
-            counter += 1
-        end
+
     rescue
          logger.info ">>>>>LOG_INFORMATION : CRASH ERROR : #{$!}"
 
@@ -64,7 +55,7 @@ class ReceiveTextController < ApplicationController
   def get_nearby_from_google_api(msg="")
       logger.info ">>>>>LOG_INFORMATION : Getting nearby results from google API..."
       txt_contents = []
-      msg_contents = msg.split('NEARBY:')[1].strip()
+      msg_contents = msg.split('FIND:')[1].strip()
       google_api_url = "https://maps.googleapis.com/maps/api/place/textsearch/json?query=#{msg_contents}&sensor=true&opennow&key=AIzaSyDvHC2dZhR9I0uMBtLxp0Bq1qulebuTRQY"
       logger.info ">>>>>LOG_INFORMATION : URL: #{URI::encode(google_api_url)}"
       url_open = open(URI::encode(google_api_url))
@@ -82,7 +73,7 @@ class ReceiveTextController < ApplicationController
               txt_contents << "(#{counter}) #{elt["name"]} at #{elt["formatted_address"]} rated #{elt["rating"]}"
           end
       else
-          txt_contents << "Invalid message format. Message Format should be NEARBY: <text>"
+          txt_contents << "Invalid message format. Message Format should be FINFINDxt>"
       end
       return txt_contents
   end
