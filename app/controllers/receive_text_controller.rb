@@ -1,6 +1,7 @@
 require 'open-uri'
 require 'json'
 
+
 class ReceiveTextController < ApplicationController
   def index
     begin
@@ -14,14 +15,14 @@ class ReceiveTextController < ApplicationController
     
         if msg.start_with?('BUS')
            txt_contents = get_arrival_time_from_sms_api(msg)
-        elsif msg.start_with?('FROM:')
+        elsif msg.start_with?('FROM')
            txt_contents = get_directions_from_google_api(msg)
         elsif msg.start_with?('FIND')
            txt_contents = get_nearby_from_google_api(msg)
 	elsif msg.start_with?('HELP')
 	   txt_contents = get_help(msg)
         else
-           txt_contents = ["Invalid Message Format!", " Here are some examples to assist you:\n", "i) To get real time bus information - text \"BUS 2 19 at 2717\"\n", "ii) To get directions - text \"FROM: 2110 University Avenue Madison TO: Union South Madison\"\n", " iii) To find nearby places - text \"Find restaurants near Dayton Street Madison WI\"\n" ,"iv) To get help - text \"help me\""]
+           txt_contents = ["Invalid Message Format.", " Here are some examples to assist you:\n", "(1) To get real time bus information - text \"Bus 37 at 178\"\n", "(2) To get directions - text \"From 2110 University Avenue Madison to Union South Madison\"\n", " (3) To find nearby places - text \"Find bars near Dayton Street Madison WI\"\n" ,"(4) To get help - text \"Help me\""]
         end
 
         txt_msg = txt_contents.join('')
@@ -57,7 +58,7 @@ class ReceiveTextController < ApplicationController
 
   end
   def get_help(msg="")
-	txt_contents=["i) Get real time bus info by texting \"BUS <bus-no(s)> at <stop-id>\" Eg. BUS 2 19 at 2717\nii) Get directions by texting \"FROM: <from_addr> TO: <to_addr>\". Eg. FROM: Madison, Wisconsin TO: Chicago, IL.\niii) Find the places nearby by texting \"find <place>\". Eg. find restaurants near San Francisco "]
+	txt_contents=["(1) Get real time bus info by texting \"Bus <bus-no(s)> at <stop-id>\" Eg. Bus 2 19 at 2717\n(2) Get directions by texting \"From <from_addr> to <to_addr>\". Eg. From Madison, Wisconsin to Chicago, IL.\n(3) Find the places nearby by texting \"Find <number_of_results> <type_of_place>\". The parameter <number_of_results> is optional, default is 5. Eg. Find 3 restaurants near San Francisco "]
 	return txt_contents
 	
   end
@@ -65,6 +66,15 @@ class ReceiveTextController < ApplicationController
       logger.info ">>>>>LOG_INFORMATION : Getting nearby results from google API..."
       txt_contents = []
       msg_contents = msg.split('FIND')[1].strip()
+      default_no_of_results =5	
+      user_given_no_of_results = msg_contents.split()[0][/\d+/]
+#	user_given_no_of_results = msg_contents[/\d+/]
+      logger.info "#{user_given_no_of_results}"
+      if user_given_no_of_results
+	default_no_of_results =  user_given_no_of_results.to_i
+	msg_contents = msg_contents.split(user_given_no_of_results)
+      end
+     
       google_api_url = "https://maps.googleapis.com/maps/api/place/textsearch/json?query=#{msg_contents}&sensor=true&opennow&key=AIzaSyDvHC2dZhR9I0uMBtLxp0Bq1qulebuTRQY"
       logger.info ">>>>>LOG_INFORMATION : URL: #{URI::encode(google_api_url)}"
       url_open = open(URI::encode(google_api_url))
@@ -76,13 +86,15 @@ class ReceiveTextController < ApplicationController
           counter = 0
           for elt in json_results
               counter += 1
-              if counter > 5
+              if counter > default_no_of_results
                   break
               end
-              txt_contents << "(#{counter}) #{elt["name"]} at #{elt["formatted_address"]} rated #{elt["rating"]}"
+	      formatted_address = elt["formatted_address"]
+ 	      address = formatted_address.split(',')	
+              txt_contents << "(#{counter}) #{elt["name"]} at #{address[0].strip()}, #{address[1].strip()}, #{address[2].strip()}\n" # rated #{elt["rating"]}\n"
           end
-      else
-          txt_contents << "Invalid message format. Message Format should be FINFINDxt>"
+      elsif json_obj["status"].include? "ZERO_RESULTS"
+	  txt_contents << "Results not found."
       end
       return txt_contents
   end
@@ -126,7 +138,7 @@ class ReceiveTextController < ApplicationController
   def get_arrival_time_from_sms_api(msg="")
       logger.info ">>>>>LOG_INFORMATION : Getting schedule information from SMSAPI..."
       txt_contents = []
-      if msg.include? "BUS"
+      if msg.include? "AT"
          text = msg.split('BUS')[1].strip()
 	 stop_id = text.split('AT')[1].strip()
 	 bus_nos = text.split('at')[0].strip().split(/,| /).map {|s| s.strip().to_i} 
@@ -146,11 +158,11 @@ class ReceiveTextController < ApplicationController
                  end
              end
 	     if i<=0
-		 txt_contents << "Bus number is invalid or the bus does not stop at the given stop id"
+		 txt_contents << "Invalid bus number or bus not available at this hour"
 	     end
          else json_obj.include? "description"
 		 if json_obj["description"].include? "No routes found for this stop"
-			txt_contents << "Sorry, bus not available at this hour."
+			txt_contents << "Buses not available at this hour."
 		 elsif json_obj["description"].include? "Unable to validate the request"
           		logger.info ">>>>>LOG_INFORMATION : ERROR : Unidentfied stop : #{msg}"
           		txt_contents << "Unidentified stop. Please try again with the correct stop-id."
@@ -158,7 +170,7 @@ class ReceiveTextController < ApplicationController
 	 end
       else
           logger.info ">>>>>LOG_INFORMATION : ERROR : Invalid format : #{msg}"
-          txt_contents << "Invalid message format. Message Format should be BUS <bus-number(s)> at <stop_id>. Eg. BUS 2 19 at 178"
+          txt_contents << "Invalid message format. Message format should be BUS <bus-no(s)> at <stop_id>. Eg. BUS 2 19 at 178"
       end
 
       return txt_contents
