@@ -33,13 +33,13 @@ class ReceiveTextController < ApplicationController
         #twilio_token = "f1bffe6a8d0a28e9b6068a983cb3a99b"
         #twilio_phone_number = "6082162484"
 
-        #twilio_sid = 'AC80655ad8c5919e905e13320efb8e91b5'
-        #twilio_token = "0774a2715d2f13f3f89b6102c2b41a47"
-        #twilio_phone_number = "7655885542"
+        twilio_sid = 'AC80655ad8c5919e905e13320efb8e91b5'
+        twilio_token = "0774a2715d2f13f3f89b6102c2b41a47"
+        twilio_phone_number = "7655885542"
         
-	twilio_sid = 'ACcf265d65051471141a150267c117ab82'
-        twilio_token = "5979bf88a02f53246d2700f0dc6e02ac"
-        twilio_phone_number = "2625330030"
+	#twilio_sid = 'ACcf265d65051471141a150267c117ab82'
+        #twilio_token = "5979bf88a02f53246d2700f0dc6e02ac"
+        #twilio_phone_number = "2625330030"
         
         logger.info ">>>>>LOG_INFORMATION : Sending Msg to #{from_number}..."
         @twilio_client = Twilio::REST::Client.new twilio_sid, twilio_token
@@ -58,7 +58,7 @@ class ReceiveTextController < ApplicationController
 
   end
   def get_help(msg="")
-	txt_contents=["(1) Get real time bus info by texting \"Bus <bus-no(s)> at <stop-id>\" Eg. Bus 2 19 at 2717\n(2) Get directions by texting \"From <from_addr> to <to_addr>\". Eg. From Madison, Wisconsin to Chicago, IL.\n(3) Find the places nearby by texting \"Find <number_of_results> <type_of_place>\". The parameter <number_of_results> is optional, default is 5. Eg. Find 3 restaurants near San Francisco "]
+	txt_contents=["(1) Get real time bus info by texting \"Bus <bus-no(s)> at <stop-id>\" Eg. Bus 2 19 at 2717\n(2) Get directions by texting \"From <from_addr> to <to_addr> by {car/bus/bike/walk}\". The mode of transporation is optional, default is car. Eg. From Memorial Union, Madison, WI to Union South, Madison, WI by walk.\n(3) Find the places nearby by texting \"Find <number_of_results> <type_of_place>\". The parameter <number_of_results> is optional, default is 5. Eg. Find 3 restaurants near San Francisco "]
 	return txt_contents
 	
   end
@@ -104,32 +104,53 @@ class ReceiveTextController < ApplicationController
   def get_directions_from_google_api(msg="")
       logger.info ">>>>>LOG_INFORMATION : Getting directions from google API..."
       txt_contents = []
-      if msg.include? "TO:"
-          msg_new = msg.split('FROM:')[1].strip()
-          msg_contents = msg_new.split('TO:').map {|s| s.strip()}
-          google_api_url = "https://maps.googleapis.com/maps/api/directions/json?origin=#{msg_contents[0]}&destination=#{msg_contents[1]}&sensor=false&key=AIzaSyBYx4aypBnysn1OgzxR26ITEoPD0I60ugc&avoid=highways&mode=transit&departure_time=#{Time.now.to_i}"
+      if msg.include? "TO"
+          msg_new = msg.split('FROM')[1].strip()
+	  from_address = msg_new.split('TO')[0].strip()
+	  msg_new = msg_new.split('TO')[1].strip() 
+	  to_address = msg_new.split('BY')[0].strip()
+	  default_mode ="driving"
+	  user_mode = msg_new.split('BY')[1]
+  	  if user_mode
+		if user_mode.include? "BUS"
+			default_mode = "transit"
+		elsif user_mode.include? "BIKE"
+			default_mode = "bicycling"
+		elsif user_mode.include? "WALK"
+			default_mode = "walking"
+		end
+	  end
+	
+          google_api_url = "https://maps.googleapis.com/maps/api/directions/json?origin=#{from_address}&destination=#{to_address}&sensor=false&key=AIzaSyBYx4aypBnysn1OgzxR26ITEoPD0I60ugc&mode=#{default_mode}&departure_time=#{Time.now.to_i}"
           logger.info ">>>>>LOG_INFORMATION : URL: #{URI::encode(google_api_url)}"
           url_open = open(URI::encode(google_api_url))
           json_obj = JSON.load(url_open)
           logger.info ">>>>>LOG_INFORMATION : JSON_RESULT: #{json_obj}"
 
-
+	  count=0
           if json_obj.include?("routes") && json_obj["routes"].any?
+            if default_mode.include?("transit")
               for elt in json_obj["routes"][0]["legs"][0]["steps"]
-                 if elt["travel_mode"] == "TRANSIT"
-                     txt_contents << "#{elt['transit_details']['line']['short_name']} #{elt['html_instructions']} at #{elt['transit_details']['arrival_time']['text']}"
-                     txt_contents << "Get down at #{elt['transit_details']['arrival_stop']['name']}"
+		count=count+1
+                if elt["travel_mode"] == "TRANSIT"
+                     txt_contents << "#{count}. Take #{elt['transit_details']['line']['short_name']} #{elt['html_instructions']} at #{elt['transit_details']['arrival_time']['text']}. "
+                     txt_contents << "Get down at #{elt['transit_details']['arrival_stop']['name']}\n"
                  elsif elt["travel_mode"] == "WALKING"
-                     txt_contents << elt["html_instructions"]
+		     walk_content = elt['html_instructions']
+		     if walk_content.include?(", USA")
+			     walk_content = walk_content.split(', USA')[0]
+		     end
+                     txt_contents << "#{count}. #{walk_content}\n" #{elt['html_instructions']}\n"
                  end
               end
+	    end
           else
               logger.info ">>>>>LOG_INFORMATION : ERROR : Unidentified start/end location : #{msg}"
-              txt_contents << "Unidentified FROMTOO location. Please try another location text. Try adding the city / state information."
+              txt_contents << "Unidentified source/destination location. Please try again with city/state information."
           end
       else
           logger.info ">>>>>LOG_INFORMATION : ERROR : Invalid format : #{msg}"
-          txt_contents << "Invalid message format. Message Format should be FROM: <address> TO: <address>"
+          txt_contents << "Invalid message format. Message Format should be From <from_addr> to <to_addr> by {car/bus/bike/walk}. Eg From Memorial Union, Madison, WI to Union South, Madison, WI by bus"
       end
       return txt_contents
   end
@@ -170,7 +191,7 @@ class ReceiveTextController < ApplicationController
 	 end
       else
           logger.info ">>>>>LOG_INFORMATION : ERROR : Invalid format : #{msg}"
-          txt_contents << "Invalid message format. Message format should be BUS <bus-no(s)> at <stop_id>. Eg. BUS 2 19 at 178"
+          txt_contents << "Invalid message format. Message format should be Bus <bus-no(s)> at <stop_id>. Eg. Bus 2 19 at 178"
       end
 
       return txt_contents
