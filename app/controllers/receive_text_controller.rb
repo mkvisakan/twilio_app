@@ -5,6 +5,7 @@ require 'json'
 class ReceiveTextController < ApplicationController
   def index
     begin
+        help_text = "(1) Get real time bus info by texting \"Bus <bus-no(s)> at <stop-id>\" Eg. Bus 2 19 at 2717\n(2) Get directions by texting \"From <from_addr> to <to_addr> by {car/bus/bike/walk}\". The mode of transporation is optional, default is bus. Eg. From Memorial Union, Madison, WI to Union South, Madison, WI by walk.\n(3) Find the places nearby by texting \"Find <number_of_results> <type_of_place>\". The parameter <number_of_results> is optional, default is 5. Eg. Find 3 restaurants near San Francisco\n(4) To get help text \"HelpMe\" "
         msg = params["Body"]
         from_number = params["From"]
 
@@ -15,14 +16,14 @@ class ReceiveTextController < ApplicationController
     
         if msg.start_with?('BUS')
            txt_contents = get_arrival_time_from_sms_api(msg)
-        elsif msg.start_with?('FROM')
+        elsif msg.start_with?('FROM ')
            txt_contents = get_directions_from_google_api(msg)
         elsif msg.start_with?('FIND')
            txt_contents = get_nearby_from_google_api(msg)
-	elsif msg.start_with?('HELP')
-	   txt_contents = get_help(msg)
+	elsif msg.start_with?('HELPME')
+	   txt_contents = [help_text]
         else
-           txt_contents = ["Invalid Message Format.", " Here are some examples to assist you:\n", "(1) To get real time bus information - text \"Bus 37 at 178\"\n", "(2) To get directions - text \"From 2110 University Avenue Madison to Union South Madison\"\n", " (3) To find nearby places - text \"Find bars near Dayton Street Madison WI\"\n" ,"(4) To get help - text \"Help me\""]
+           txt_contents = ["Invalid Message Format.", " Here are some examples to assist you:\n", help_text]
         end
 
         txt_msg = txt_contents.join('')
@@ -33,13 +34,13 @@ class ReceiveTextController < ApplicationController
         #twilio_token = "f1bffe6a8d0a28e9b6068a983cb3a99b"
         #twilio_phone_number = "6082162484"
 
-        twilio_sid = 'AC80655ad8c5919e905e13320efb8e91b5'
-        twilio_token = "0774a2715d2f13f3f89b6102c2b41a47"
-        twilio_phone_number = "7655885542"
+        #twilio_sid = 'AC80655ad8c5919e905e13320efb8e91b5'
+        #twilio_token = "0774a2715d2f13f3f89b6102c2b41a47"
+        #twilio_phone_number = "7655885542"
         
-	#twilio_sid = 'ACcf265d65051471141a150267c117ab82'
-        #twilio_token = "5979bf88a02f53246d2700f0dc6e02ac"
-        #twilio_phone_number = "2625330030"
+	twilio_sid = 'ACcf265d65051471141a150267c117ab82'
+        twilio_token = "5979bf88a02f53246d2700f0dc6e02ac"
+        twilio_phone_number = "2625330030"
         
         logger.info ">>>>>LOG_INFORMATION : Sending Msg to #{from_number}..."
         @twilio_client = Twilio::REST::Client.new twilio_sid, twilio_token
@@ -57,11 +58,7 @@ class ReceiveTextController < ApplicationController
     end
 
   end
-  def get_help(msg="")
-	txt_contents=["(1) Get real time bus info by texting \"Bus <bus-no(s)> at <stop-id>\" Eg. Bus 2 19 at 2717\n(2) Get directions by texting \"From <from_addr> to <to_addr> by {car/bus/bike/walk}\". The mode of transporation is optional, default is car. Eg. From Memorial Union, Madison, WI to Union South, Madison, WI by walk.\n(3) Find the places nearby by texting \"Find <number_of_results> <type_of_place>\". The parameter <number_of_results> is optional, default is 5. Eg. Find 3 restaurants near San Francisco "]
-	return txt_contents
-	
-  end
+
   def get_nearby_from_google_api(msg="")
       logger.info ">>>>>LOG_INFORMATION : Getting nearby results from google API..."
       txt_contents = []
@@ -104,22 +101,23 @@ class ReceiveTextController < ApplicationController
   def get_directions_from_google_api(msg="")
       logger.info ">>>>>LOG_INFORMATION : Getting directions from google API..."
       txt_contents = []
-      if msg.include? "TO"
-          msg_new = msg.split('FROM')[1].strip()
-	  from_address = msg_new.split('TO')[0].strip()
-	  msg_new = msg_new.split('TO')[1].strip() 
-	  to_address = msg_new.split('BY')[0].strip()
-	  default_mode ="driving"
-	  user_mode = msg_new.split('BY')[1]
+      if msg.include? " TO "
+          msg_new = msg.split('FROM ')[1].strip()
+	  from_address = msg_new.split(' TO ')[0].strip()
+	  msg_new = msg_new.split(' TO ')[1].strip() 
+	  to_address = msg_new.split(' BY ')[0].strip()
+	  default_mode ="transit"
+	  user_mode = msg_new.split(' BY ')[1]
   	  if user_mode
-		if user_mode.include? "BUS"
-			default_mode = "transit"
+		if user_mode.include? "CAR"
+			default_mode = "driving"
 		elsif user_mode.include? "BIKE"
 			default_mode = "bicycling"
 		elsif user_mode.include? "WALK"
 			default_mode = "walking"
 		end
 	  end
+          logger.info ">>>>>LOG_INFORMATION : default mode : #{default_mode}"
 	
           google_api_url = "https://maps.googleapis.com/maps/api/directions/json?origin=#{from_address}&destination=#{to_address}&sensor=false&key=AIzaSyBYx4aypBnysn1OgzxR26ITEoPD0I60ugc&mode=#{default_mode}&departure_time=#{Time.now.to_i}"
           logger.info ">>>>>LOG_INFORMATION : URL: #{URI::encode(google_api_url)}"
@@ -133,8 +131,8 @@ class ReceiveTextController < ApplicationController
               for elt in json_obj["routes"][0]["legs"][0]["steps"]
 		count=count+1
                 if elt["travel_mode"] == "TRANSIT"
-                     txt_contents << "#{count}. Take #{elt['transit_details']['line']['short_name']} #{elt['html_instructions']} at #{elt['transit_details']['arrival_time']['text']}. "
-                     txt_contents << "Get down at #{elt['transit_details']['arrival_stop']['name']}\n"
+                     txt_contents << "#{count}. Take #{elt['transit_details']['line']['short_name']} #{elt['html_instructions']} at #{elt['transit_details']['departure_time']['text']}. "
+                     txt_contents << "Get down at #{elt['transit_details']['arrival_stop']['name']} at #{elt['transit_details']['arrival_time']['text']}\n"
                  elsif elt["travel_mode"] == "WALKING"
 		     walk_content = elt['html_instructions']
 		     if walk_content.include?(", USA")
