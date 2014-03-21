@@ -5,7 +5,7 @@ require 'json'
 class ReceiveTextController < ApplicationController
   def index
     begin
-        help_text = "(1) Get real time bus info by texting \"Bus <bus-no(s)> at <stop-id>\" Eg. Bus 2 19 at 2717\n(2) Get directions by texting \"From <from_addr> to <to_addr> by {car/bus/bike/walk}\". The mode of transporation is optional, default is bus. Eg. From Memorial Union, Madison, WI to Union South, Madison, WI by walk.\n(3) Find the places nearby by texting \"Find <number_of_results> <type_of_place>\". The parameter <number_of_results> is optional, default is 5. Eg. Find 3 restaurants near San Francisco\n(4) To get help text \"HelpMe\" "
+        help_text = "(1) Get real time bus info by texting \"Bus <bus-no(s)> at <stop-id>\" Eg. Bus 2 19 at 2717\n(2) Get directions by texting \"From <from_addr> to <to_addr> by {car/bus/bike/walk}\". The mode of transporation is optional, default is bus. Eg. From Memorial Union, Madison, WI to Union South, Madison, WI by walk.\n(3) Find the places nearby by texting \"Find <number_of_results> <type_of_place>\". The parameter <number_of_results> is optional, default is 5. Eg. Find 3 restaurants near San Francisco\n(4) To get help text \"Helpme\" "
         msg = params["Body"]
         from_number = params["From"]
 
@@ -39,8 +39,8 @@ class ReceiveTextController < ApplicationController
         #twilio_phone_number = "7655885542"
         
 	twilio_sid = 'ACcf265d65051471141a150267c117ab82'
-        twilio_token = "5979bf88a02f53246d2700f0dc6e02ac"
-        twilio_phone_number = "2625330030"
+ 	twilio_token = "5979bf88a02f53246d2700f0dc6e02ac"
+ 	twilio_phone_number = "2625330030"
         
         logger.info ">>>>>LOG_INFORMATION : Sending Msg to #{from_number}..."
         @twilio_client = Twilio::REST::Client.new twilio_sid, twilio_token
@@ -126,6 +126,7 @@ class ReceiveTextController < ApplicationController
           logger.info ">>>>>LOG_INFORMATION : JSON_RESULT: #{json_obj}"
 
 	  count=0
+	  if json_obj["status"].include?("OK")
           if json_obj.include?("routes") && json_obj["routes"].any?
             if default_mode.include?("transit")
               for elt in json_obj["routes"][0]["legs"][0]["steps"]
@@ -141,8 +142,24 @@ class ReceiveTextController < ApplicationController
                      txt_contents << "#{count}. #{walk_content}\n" #{elt['html_instructions']}\n"
                  end
               end
+	    #end
+	    #if default_mode.include?("driving")
+	    else
+		for elt in json_obj["routes"][0]["legs"][0]["steps"]
+		  count= count+1
+		  d_inst = elt['html_instructions']
+		  d_stripped = d_inst.gsub('<b>','')
+		  d_stripped= d_stripped.gsub('</b>','')
+		  d_stripped = d_stripped.gsub('</div>','.')
+		  d_stripped = d_stripped.gsub(/<.*">/,'. ')
+		  txt_contents << "#{count}. #{d_stripped}\n"
+		end
 	    end
-          else
+	 end
+          elsif json_obj["status"].include?("ZERO_RESULTS")
+		txt_contents << "Routes not found."
+		
+	  else
               logger.info ">>>>>LOG_INFORMATION : ERROR : Unidentified start/end location : #{msg}"
               txt_contents << "Unidentified source/destination location. Please try again with city/state information."
           end
