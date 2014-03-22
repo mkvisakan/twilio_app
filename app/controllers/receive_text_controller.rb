@@ -31,27 +31,37 @@ class ReceiveTextController < ApplicationController
 
         txt_msg = txt_contents.join('')
 
-       # msg_list = txt_msg.chars.each_slice(120).map(&:join)
+        msg_list = txt_msg.chars.each_slice(1585).map(&:join)
 
+        #kumaresh test account
         #twilio_sid = 'AC15a225ec77a2891ead8403d67723d2d0'
         #twilio_token = "f1bffe6a8d0a28e9b6068a983cb3a99b"
         #twilio_phone_number = "6082162484"
 
-        twilio_sid = 'AC80655ad8c5919e905e13320efb8e91b5'
-        twilio_token = "0774a2715d2f13f3f89b6102c2b41a47"
-        twilio_phone_number = "7655885542"
+        #twilio_sid = 'AC80655ad8c5919e905e13320efb8e91b5'
+        #twilio_token = "0774a2715d2f13f3f89b6102c2b41a47"
+        #twilio_phone_number = "7655885542"
         
-	#twilio_sid = 'ACcf265d65051471141a150267c117ab82'
- 	#twilio_token = "5979bf88a02f53246d2700f0dc6e02ac"
- 	#twilio_phone_number = "2625330030"
+	#production account
+	twilio_sid = 'ACcf265d65051471141a150267c117ab82'
+ 	twilio_token = "5979bf88a02f53246d2700f0dc6e02ac"
+ 	twilio_phone_number = "2625330030"
+
+        counter  = 1
+        num_msgs = msg_list.length
+
+        for msg in msg_list
+            msg += "\n::Msg - #{counter}/#{num_msgs}"
         
-        logger.info ">>>>>LOG_INFORMATION : Sending Msg to #{from_number}..."
-        @twilio_client = Twilio::REST::Client.new twilio_sid, twilio_token
-     @twilio_client.account.messages.create(
-              :from => "+1#{twilio_phone_number}",
-              :to => from_number ,
-              :body => txt_msg
-            )
+            logger.info ">>>>>LOG_INFORMATION : Sending Msg #{counter} to #{from_number}..."
+            @twilio_client = Twilio::REST::Client.new twilio_sid, twilio_token
+            @twilio_client.account.messages.create(
+                  :from => "+1#{twilio_phone_number}",
+                  :to => from_number ,
+                  :body => msg
+                  )
+            counter += 1
+        end
 
     rescue
          logger.info ">>>>>LOG_INFORMATION : CRASH ERROR : #{$!}"
