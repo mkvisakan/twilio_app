@@ -38,9 +38,9 @@ class ReceiveTextController < ApplicationController
         #twilio_token = "f1bffe6a8d0a28e9b6068a983cb3a99b"
         #twilio_phone_number = "6082162484"
 
-        #twilio_sid = 'AC95f0707fde5738dee612f7116f660cab'   # 'AC80655ad8c5919e905e13320efb8e91b5'
-        #twilio_token = "7fa42958117da90bba11838272d75539"   #"0774a2715d2f13f3f89b6102c2b41a47"
-        #twilio_phone_number = "7655899090"
+        #twilio_sid =  'AC80655ad8c5919e905e13320efb8e91b5' #'AC95f0707fde5738dee612f7116f660cab'  
+        #twilio_token = "0774a2715d2f13f3f89b6102c2b41a47"  #7fa42958117da90bba11838272d75539"   #""
+        #twilio_phone_number = "7655885542" #"7655899090"
         
 	#production account
 	twilio_sid = 'ACcf265d65051471141a150267c117ab82'
@@ -138,7 +138,7 @@ class ReceiveTextController < ApplicationController
           logger.info ">>>>>LOG_INFORMATION : URL: #{URI::encode(google_api_url)}"
           url_open = open(URI::encode(google_api_url))
           json_obj = JSON.load(url_open)
-          logger.info ">>>>>LOG_INFORMATION : JSON_RESULT: #{json_obj}"
+          #logger.info ">>>>>LOG_INFORMATION : JSON_RESULT: #{json_obj}"
 
 	  count=0
 	  if json_obj["status"].include?("OK")
@@ -169,8 +169,21 @@ class ReceiveTextController < ApplicationController
 		  d_stripped = d_stripped.gsub('</div>','.')
 		  d_stripped = d_stripped.gsub(/<.*">/,'. ')
 		  d_stripped = d_stripped.gsub('&nbsp;','')
-		  txt_contents << "(#{count}) #{d_stripped}\n"
+		  distance = elt['distance']['text'];
+		  if d_stripped.downcase.start_with?('head') or d_stripped.downcase.start_with?('continue')
+		    txt_contents << "\n(#{count}) #{d_stripped} for #{distance}."
+		  else
+		    txt_contents << "\n(#{count}) #{d_stripped}. Stay for #{distance}."
+		  end
 		end
+		if d_stripped.downcase.start_with?('head') or d_stripped.downcase.start_with?('continue')
+			txt_contents.pop	
+			txt_contents << "\n(#{count}) #{d_stripped}"
+	        else
+			txt_contents.pop	
+			txt_contents << "\n(#{count}) #{d_stripped}"
+		end
+		txt_contents << ". In #{distance}, you will arrive at your destination."
 	    end
 	 end
           elsif json_obj["status"].include?("ZERO_RESULTS")
