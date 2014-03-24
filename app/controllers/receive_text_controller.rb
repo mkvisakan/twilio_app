@@ -38,6 +38,7 @@ class ReceiveTextController < ApplicationController
         #twilio_token = "f1bffe6a8d0a28e9b6068a983cb3a99b"
         #twilio_phone_number = "6082162484"
 
+	#Salini's test account
         #twilio_sid =  'AC80655ad8c5919e905e13320efb8e91b5' #'AC95f0707fde5738dee612f7116f660cab'  
         #twilio_token = "0774a2715d2f13f3f89b6102c2b41a47"  #7fa42958117da90bba11838272d75539"   #""
         #twilio_phone_number = "7655885542" #"7655899090"
@@ -195,7 +196,7 @@ class ReceiveTextController < ApplicationController
           end
       else
           logger.info ">>>>>LOG_INFORMATION : ERROR : Invalid format : #{msg}"
-          txt_contents << "Invalid message format. Message Format should be From <from_addr> to <to_addr> by {car/bus/bike/walk}. Eg From Memorial Union, Madison, WI to Union South, Madison, WI by bus"
+          txt_contents << "Invalid message format. Message format should be:\nFrom (from-addr) to (to-addr) by car/bus/bike/walk.\nEg. From skydeck chicago to navy pier by car"
       end
       return txt_contents
   end
@@ -220,11 +221,11 @@ class ReceiveTextController < ApplicationController
              for elt in json_obj["stop"]["route"]
                  if bus_nos.include? elt['routeID'].to_i
 		    i= i+1
-                    txt_contents << "(#{i}) BUS #{elt['routeID']} towards #{elt['destination']} arrives at #{elt['arrivalTime']}\n"
+                    txt_contents << "(#{i}) Bus #{elt['routeID']} towards #{elt['destination']} arrives at #{elt['arrivalTime']}\n"
                  end
              end
 	     if i<=0
-		 txt_contents << "Invalid bus number or bus not available at this hour"
+		 txt_contents << "Invalid bus number or bus not available at this hour."
 	     end
          else json_obj.include? "description"
 		 if json_obj["description"].include? "No routes found for this stop"
@@ -236,7 +237,7 @@ class ReceiveTextController < ApplicationController
 	 end
       else
           logger.info ">>>>>LOG_INFORMATION : ERROR : Invalid format : #{msg}"
-          txt_contents << "Invalid message format. Message format should be Bus <bus-no(s)> at <stop_id>. Eg. Bus 2 19 at 178"
+          txt_contents << "Invalid message format. Message format should be:\nBus (bus-numbers) at (stop-id).\nEg. Bus 2 19 at 178"
       end
 
       return txt_contents
