@@ -46,14 +46,14 @@ class ReceiveTextController < ApplicationController
         #twilio_phone_number = "6082162484"
 
 	#Salini's test account
-        twilio_sid =  'AC80655ad8c5919e905e13320efb8e91b5' #'AC95f0707fde5738dee612f7116f660cab'  
-        twilio_token = "0774a2715d2f13f3f89b6102c2b41a47"  #7fa42958117da90bba11838272d75539"   #""
-        twilio_phone_number = "7655885542" #"7655899090"
+        #twilio_sid =  'AC80655ad8c5919e905e13320efb8e91b5' #'AC95f0707fde5738dee612f7116f660cab'  
+        #twilio_token = "0774a2715d2f13f3f89b6102c2b41a47"  #7fa42958117da90bba11838272d75539"   #""
+        #twilio_phone_number = "7655885542" #"7655899090"
         
 	#production account
-	#twilio_sid = 'ACcf265d65051471141a150267c117ab82'
- 	#twilio_token = "5979bf88a02f53246d2700f0dc6e02ac"
- 	#twilio_phone_number = "2625330030"
+	twilio_sid = 'ACcf265d65051471141a150267c117ab82'
+ 	twilio_token = "5979bf88a02f53246d2700f0dc6e02ac"
+ 	twilio_phone_number = "2625330030"
 
         counter  = 1
         num_msgs = msg_list.length
@@ -245,7 +245,6 @@ class ReceiveTextController < ApplicationController
          json_obj = JSON.load(url_open)
          logger.info ">>>>>LOG_INFORMATION : JSON_RESULT: #{json_obj}"
 
-	 txt_contents << "blah\n" 
 	 i=0;	 
          if json_obj.include? "stop"
 	  if bus_nos.any?
