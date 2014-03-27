@@ -5,7 +5,10 @@ require 'json'
 class ReceiveTextController < ApplicationController
   def index
     begin
-        help_text = "Usage:\n(1) From skydeck chicago to navy pier by car\n(2) Find 3 restaurants near San Francisco\n(3) Bus 2 19 at 2717\n\nDescription:\n(1) To get directions, text: \n\"From (from-addr) to (to-addr) by car/bike/walk/public transit\". Mode of transportation is optional, default is public transit.\n(2) To find nearby places, text:\n\"Find (number) (type-of-place) in/near (location)\". Number of places is optional, default is 5, max is 20.\n(3) To get real time bus info for Madison-WI, text:\n\"Bus (bus-numbers) at (stop-id)\""
+	welcome_text ="Lets get you started with some examples. Text us:\n1. Bus 2 19 at 2717\n2. From skydeck chicago to navy pier by car\n3. Find 3 bars in boston\nFor more details on our features, message: More 1/2/3. Eg. More 2" 
+
+
+        help_text = "Usage:\n(1) From skydeck chicago to navy pier by car\n(2) Find 3 restaurants near San Francisco\n(3) Bus 2 19 at 2717\n\n Description:\n(1) To get directions, text: \n\"From (from-addr) to (to-addr) by car/bike/walk/public transit\". Mode of transportation is optional, default is public transit.\n(2) To find nearby places, text:\n\"Find (number) (type-of-place) in/near (location)\". Number of places is optional, default is 5, max is 20.\n(3) To get real time bus info for Madison-WI, text:\n\"Bus (bus-numbers) at (stop-id)\""
         msg = params["Body"]
         from_number = params["From"]
         msg = msg.strip().upcase
@@ -23,10 +26,14 @@ class ReceiveTextController < ApplicationController
            txt_contents = get_directions_from_google_api(msg)
         elsif msg.start_with?('FIND')
            txt_contents = get_nearby_from_google_api(msg)
-	elsif msg.start_with?('HELPME')
-	   txt_contents = [help_text]
+	elsif msg.start_with?('HELP')
+	   txt_contents = ["Hey there! ",welcome_text]
+	elsif msg.start_with?('HELLO') or msg.start_with?('HI')
+	   txt_contents = ["Welcome aboard! ", welcome_text]
+	elsif msg.start_with?('MORE')
+	   txt_contents = get_more_help(msg)
         else
-           txt_contents = ["Invalid Message Format.", " Here are some examples to assist you:\n", help_text]
+           txt_contents = ["Snap! Invalid format. ", welcome_text]
         end
 
         txt_msg = txt_contents.join('')
@@ -39,14 +46,14 @@ class ReceiveTextController < ApplicationController
         #twilio_phone_number = "6082162484"
 
 	#Salini's test account
-        #twilio_sid =  'AC80655ad8c5919e905e13320efb8e91b5' #'AC95f0707fde5738dee612f7116f660cab'  
-        #twilio_token = "0774a2715d2f13f3f89b6102c2b41a47"  #7fa42958117da90bba11838272d75539"   #""
-        #twilio_phone_number = "7655885542" #"7655899090"
+        twilio_sid =  'AC80655ad8c5919e905e13320efb8e91b5' #'AC95f0707fde5738dee612f7116f660cab'  
+        twilio_token = "0774a2715d2f13f3f89b6102c2b41a47"  #7fa42958117da90bba11838272d75539"   #""
+        twilio_phone_number = "7655885542" #"7655899090"
         
 	#production account
-	twilio_sid = 'ACcf265d65051471141a150267c117ab82'
- 	twilio_token = "5979bf88a02f53246d2700f0dc6e02ac"
- 	twilio_phone_number = "2625330030"
+	#twilio_sid = 'ACcf265d65051471141a150267c117ab82'
+ 	#twilio_token = "5979bf88a02f53246d2700f0dc6e02ac"
+ 	#twilio_phone_number = "2625330030"
 
         counter  = 1
         num_msgs = msg_list.length
@@ -74,6 +81,28 @@ class ReceiveTextController < ApplicationController
     end
 
   end
+
+  def get_more_help(msg="")
+      txt_contents = []
+      msg_contents = msg.split('MORE')[1].strip()
+      msg_contents = msg_contents.split()[0][/\d+/]
+      number =msg_contents.to_i
+      if number == 1
+	txt_contents << "Supported formats for real-time bus info for Madison:\n1. Bus 15 10 at 178 - Timings for buses 15 & 10 at stop-id 178\n2. Bus at 2146 - Timings for the next 10 buses at stop-id 2146"
+      elsif number ==2 
+	txt_contents << "To get directions, text:\nFrom (location) to (location) by bike/car/walk.\nEg.1. From 154 Buchanan street sfo to market street by bike\n2. From Grand street brooklyn to 6 Avenue Manhattan. Default is public-transit if mode of transportation is not specified." 
+      elsif number ==3
+	txt_contents << "To find places nearby, text:\nFind (number) (type of place) in/near (location/zipcode).Eg.\n1. Find 3 bars near 21 N Park street Madison WI\n2. Find 2 hair cuts in 98006\n3. Find parking near central park. Default number of results is 5 if not specified."
+      else
+	 if msg_contents.nil?
+		txt_contents << "Oops! Invalid format. For more details on our features, message: More 1/2/3. Eg. More 2" 
+	 else
+		txt_contents << "Uh-oh! Currently we support only 3 features. Watch out for more!"
+	 end
+      end
+      return txt_contents
+  end
+
 
   def get_nearby_from_google_api(msg="")
       logger.info ">>>>>LOG_INFORMATION : Getting nearby results from google API..."
@@ -208,25 +237,37 @@ class ReceiveTextController < ApplicationController
       if msg.include? "AT"
          text = msg.split('BUS')[1].strip()
 	 stop_id = text.split('AT')[1].strip()
-	 bus_nos = text.split('at')[0].strip().split(/,| /).map {|s| s.strip().to_i} 
+	 bus_nos = text.split('AT')[0].strip().split(/,| /).map {|s| s.strip().to_i} 
 
          sms_api_url = "http://api.smsmybus.com/v1/getarrivals?key=bontrager&stopID=#{stop_id}"
          logger.info ">>>>>LOG_INFORMATION : URL: #{sms_api_url}"
          url_open = open(sms_api_url)
          json_obj = JSON.load(url_open)
          logger.info ">>>>>LOG_INFORMATION : JSON_RESULT: #{json_obj}"
- 
+
+	 txt_contents << "blah\n" 
 	 i=0;	 
          if json_obj.include? "stop"
+	  if bus_nos.any?
              for elt in json_obj["stop"]["route"]
                  if bus_nos.include? elt['routeID'].to_i
 		    i= i+1
-                    txt_contents << "(#{i}) Bus #{elt['routeID']} towards #{elt['destination']} arrives at #{elt['arrivalTime']}\n"
+                    txt_contents << "#{elt['routeID']} at #{elt['arrivalTime']}\n "
                  end
              end
-	     if i<=0
-		 txt_contents << "Invalid bus number or bus not available at this hour."
-	     end
+	  else
+             for elt in json_obj["stop"]["route"]
+		    if elt['routeID'] == "W7"
+			next
+		    end
+		    break if i == 10
+		    i= i+1
+                    txt_contents << "#{elt['routeID']} at #{elt['arrivalTime']}\n"
+             end
+	  end
+	  if i<=0
+			 txt_contents << "Invalid bus number or given bus(es) not available at this hour."
+	  end
          else json_obj.include? "description"
 		 if json_obj["description"].include? "No routes found for this stop"
 			txt_contents << "Buses not available at this hour."
