@@ -1,5 +1,7 @@
 require 'open-uri'
 require 'json'
+include FeaturesHelper
+include MessagingHelper
 
 
 class ReceiveTextController < ApplicationController
@@ -13,69 +15,31 @@ class ReceiveTextController < ApplicationController
         from_number = params["From"]
         msg = msg.strip().upcase
 	
-	if msg.start_with?('FRM ')
-	    msg=msg.gsub('FRM','FROM')	
-	end
-	
         #log input
         logger.info ">>>>>LOG_INFORMATION : #{from_number} : #{msg}"
+
+        feature_type = FeaturesHelper.identify_request_type(msg) 
     
-        if msg.start_with?('BUS')
+        if feature_type == BUS_FEATURE
            txt_contents = get_arrival_time_from_sms_api(msg)
-        elsif msg.start_with?('FROM ')
+        elsif feature_type == DIRECTIONS_FEATURE
            txt_contents = get_directions_from_google_api(msg)
-        elsif msg.start_with?('FIND')
+        elsif feature_type == NEARBY_FEATURE
            txt_contents = get_nearby_from_google_api(msg)
-	elsif msg.start_with?('HELP')
+	elsif feature_type == HELP_FEATURE
 	   txt_contents = ["Hey there! ",welcome_text]
-	elsif msg.start_with?('HELLO') or msg.start_with?('HI')
+	elsif feature_type == HELLO_FEATURE
 	   txt_contents = ["Welcome aboard! ", welcome_text]
-	elsif msg.start_with?('MORE')
+	elsif feature_type == MORE_FEATURE
 	   txt_contents = get_more_help(msg)
         else
            txt_contents = ["Snap! Invalid format. ", welcome_text]
         end
 
-        txt_msg = txt_contents.join('')
-
-        msg_list = txt_msg.chars.each_slice(1550).map(&:join)
-
-        #kumaresh test account
-        #twilio_sid = 'AC15a225ec77a2891ead8403d67723d2d0'
-        #twilio_token = "f1bffe6a8d0a28e9b6068a983cb3a99b"
-        #twilio_phone_number = "6082162484"
-
-	#Salini's test account
-        #twilio_sid =  'AC80655ad8c5919e905e13320efb8e91b5' #'AC95f0707fde5738dee612f7116f660cab'  
-        #twilio_token = "0774a2715d2f13f3f89b6102c2b41a47"  #7fa42958117da90bba11838272d75539"   #""
-        #twilio_phone_number = "7655885542" #"7655899090"
-        
-	#production account
-	twilio_sid = 'ACcf265d65051471141a150267c117ab82'
- 	twilio_token = "5979bf88a02f53246d2700f0dc6e02ac"
- 	twilio_phone_number = "2625330030"
-
-        counter  = 1
-        num_msgs = msg_list.length
-
-        for msg in msg_list
-	    if num_msgs > 1
-	            msg += "\n::Msg - #{counter}/#{num_msgs}"
-            end
-
-            logger.info ">>>>>LOG_INFORMATION : Sending Msg #{counter} to #{from_number}..."
-            @twilio_client = Twilio::REST::Client.new twilio_sid, twilio_token
-            @twilio_client.account.messages.create(
-                  :from => "+1#{twilio_phone_number}",
-                  :to => from_number ,
-                  :body => msg
-                  )
-            counter += 1
-        end
+        send_message(txt_contents, from_number)
 
     rescue
          logger.info ">>>>>LOG_INFORMATION : CRASH ERROR : #{$!}"
-
     ensure
         render text: "Thank you! You will receive an SMS shortly with bus timings."
     end
