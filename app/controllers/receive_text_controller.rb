@@ -4,6 +4,7 @@ include FeaturesHelper
 include MessagingHelper
 include BusFeature
 include DirectionsFeature
+include NearbyFeature
 
 
 class ReceiveTextController < ApplicationController
@@ -68,46 +69,5 @@ class ReceiveTextController < ApplicationController
       end
       return txt_contents
   end
-
-
-  def get_nearby_from_google_api(msg="")
-      logger.info ">>>>>LOG_INFORMATION : Getting nearby results from google API..."
-      txt_contents = []
-      msg_contents = msg.split('FIND')[1].strip()
-      default_no_of_results =5	
-      user_given_no_of_results = msg_contents.split()[0][/\d+/]
-#	user_given_no_of_results = msg_contents[/\d+/]
-      logger.info "#{user_given_no_of_results}"
-      if user_given_no_of_results
-	default_no_of_results =  user_given_no_of_results.to_i
-	msg_contents = msg_contents.split(user_given_no_of_results)
-      end
-     
-      google_api_url = "https://maps.googleapis.com/maps/api/place/textsearch/json?query=#{msg_contents}&sensor=true&opennow&key=AIzaSyDvHC2dZhR9I0uMBtLxp0Bq1qulebuTRQY"
-      logger.info ">>>>>LOG_INFORMATION : URL: #{URI::encode(google_api_url)}"
-      url_open = open(URI::encode(google_api_url))
-      json_obj = JSON.load(url_open)
-      #logger.info ">>>>>LOG_INFORMATION : JSON_RESULT: #{json_obj}"
-
-      if json_obj.include?("results") && json_obj["results"].any?
-          json_results = json_obj["results"]
-          counter = 0
-          for elt in json_results
-              counter += 1
-              if counter > default_no_of_results
-                  break
-              end
-	      formatted_address = elt["formatted_address"]
- 	      address = formatted_address.split(',')	
-              txt_contents << "(#{counter}) #{elt["name"]} at #{address[0].strip()}, #{address[1].strip()}, #{address[2].strip()}\n" # rated #{elt["rating"]}\n"
-          end
-      elsif json_obj["status"].include? "ZERO_RESULTS"
-	  txt_contents << "Results not found."
-      end
-      return txt_contents
-  end
-      
-
-
 
 end
