@@ -2,6 +2,7 @@ require 'open-uri'
 require 'json'
 include FeaturesHelper
 include MessagingHelper
+include BusFeature
 
 
 class ReceiveTextController < ApplicationController
@@ -195,57 +196,6 @@ class ReceiveTextController < ApplicationController
   end
 
 
-  def get_arrival_time_from_sms_api(msg="")
-      logger.info ">>>>>LOG_INFORMATION : Getting schedule information from SMSAPI..."
-      txt_contents = []
-      if msg.include? "AT"
-         text = msg.split('BUS')[1].strip()
-	 stop_id = text.split('AT')[1].strip()
-	 bus_nos = text.split('AT')[0].strip().split(/,| /).map {|s| s.strip().to_i} 
-
-         sms_api_url = "http://api.smsmybus.com/v1/getarrivals?key=bontrager&stopID=#{stop_id}"
-         logger.info ">>>>>LOG_INFORMATION : URL: #{sms_api_url}"
-         url_open = open(sms_api_url)
-         json_obj = JSON.load(url_open)
-         logger.info ">>>>>LOG_INFORMATION : JSON_RESULT: #{json_obj}"
-
-	 i=0;	 
-         if json_obj.include? "stop"
-	  if bus_nos.any?
-             for elt in json_obj["stop"]["route"]
-                 if bus_nos.include? elt['routeID'].to_i
-		    i= i+1
-                    txt_contents << "#{elt['routeID']} at #{elt['arrivalTime']}\n "
-                 end
-             end
-	  else
-             for elt in json_obj["stop"]["route"]
-		    if elt['routeID'] == "W7"
-			next
-		    end
-		    break if i == 10
-		    i= i+1
-                    txt_contents << "#{elt['routeID']} at #{elt['arrivalTime']}\n"
-             end
-	  end
-	  if i<=0
-			 txt_contents << "Invalid bus number or given bus(es) not available at this hour."
-	  end
-         else json_obj.include? "description"
-		 if json_obj["description"].include? "No routes found for this stop"
-			txt_contents << "Buses not available at this hour."
-		 elsif json_obj["description"].include? "Unable to validate the request"
-          		logger.info ">>>>>LOG_INFORMATION : ERROR : Unidentfied stop : #{msg}"
-          		txt_contents << "Unidentified stop. Please try again with the correct stop-id."
-		 end
-	 end
-      else
-          logger.info ">>>>>LOG_INFORMATION : ERROR : Invalid format : #{msg}"
-          txt_contents << "Invalid message format. Message format should be:\nBus (bus-numbers) at (stop-id).\nEg. Bus 2 19 at 178"
-      end
-
-      return txt_contents
-  end
 
   def new_index 
     # let's pretend that we've mapped this action to 
