@@ -22,9 +22,17 @@ class ReceiveTextController < ApplicationController
         logger.info ">>>>>LOG_INFORMATION : #{from_number} : #{msg}"
 
         feature_type = FeaturesHelper.identify_request_type(msg) 
-    
         if feature_type == BUS_FEATURE
-           txt_contents = get_arrival_time_from_sms_api(msg)
+		#if (msg =~ /BUS(.*)AT[ a-zA-Z][ a-zA-Z0-9]*$/ )
+		if (msg =~ /BUS(.*)AT \d+$/)
+			txt_contents = get_arrival_time_from_sms_api(msg)
+		else
+
+                        txt_contents  =get_bus_stopid_by_street_name(msg)
+        		logger.info ">>>>>LOG_INFORMATION : #{txt_contents}"
+#		else
+ #          		txt_contents = get_arrival_time_from_sms_api(msg)
+		end
         elsif feature_type == DIRECTIONS_FEATURE
            txt_contents = get_directions_from_google_api(msg)
         elsif feature_type == NEARBY_FEATURE

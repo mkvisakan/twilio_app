@@ -15,6 +15,10 @@ module MessagingHelper
       #TWILIO_TOKEN        = "5979bf88a02f53246d2700f0dc6e02ac"
       #TWILIO_PHONE_NO     = "2625330030"
 
+	# vidhya test account
+	#TWILIO_SID = 'PNc876d514c5e5bd88034cc6b3b08dbcde'
+        #TWILIO_TOKEN = "68f0ffd1a97584587a6c23b16a512076"
+        #TWILIO_PHONE_NO = "9252318027"
 
   def send_message(txt_contents, from_no)
       txt_msg = txt_contents.join('')

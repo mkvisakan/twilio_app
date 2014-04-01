@@ -1,3 +1,5 @@
+require 'open-uri'
+require 'json'
 module FeaturesHelper
 
   BUS_FEATURE        = 1
