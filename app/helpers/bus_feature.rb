@@ -3,7 +3,7 @@ include TextHelper
 
 module BusFeature
 
-  def extract_params(msg)
+  def extract_bus_params(msg)
       bus_regex = /(\d+)/
       stop_regex = /(\d+|SOTP|NOTP|WETP|EATP)/
       feature_params = Hash.new
@@ -15,7 +15,7 @@ module BusFeature
       return feature_params
   end
 
-  def found_required_features?(feature_params)
+  def found_required_bus_params?(feature_params)
       if feature_params.include?('stop_id')
           return true
       end
