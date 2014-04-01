@@ -29,7 +29,7 @@ module FeaturesHelper
 
   def start_with?(msg, kwds)
       for kwd in kwds
-          if msg.start_with?(kwd.upcase)
+          if msg.start_with?("#{kwd.upcase} ") 
               return true
           end 
       end 

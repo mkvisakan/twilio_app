@@ -35,7 +35,7 @@ class ReceiveTextController < ApplicationController
 	elsif feature_type == MORE_FEATURE
 	   txt_contents = get_more_help(msg)
         else
-           txt_contents = ["Snap! Invalid format. ", welcome_text]
+           txt_contents = ["Invalid format. ", welcome_text]
         end
 
         send_message(txt_contents, from_number)

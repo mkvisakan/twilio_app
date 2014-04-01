@@ -1,6 +1,7 @@
 module TextHelper
 
-  WELCOME_TXT ="Welcome to TextMe!\n" \
+  WELCOME_TXT ="Howdy\n" \
+	       "Welcome to TextMe!\n" \
 	       "Txt us what u want, we'll get it 2 u asap!\n" \
                "Usage:\n" \
                "1. Bus directions (in Madison)? Bus 2 19 at 2717\n" \
@@ -26,7 +27,7 @@ module TextHelper
 			"2. Find 2 hair cuts in 98006\n" \
 			"3. Find parking near central park. Default number of results is 5 if not specified."
 
-  INVALID_MORE_MSG_FORMAT_1 = "Oops! Invalid format.\n" \
+  INVALID_MORE_MSG_FORMAT_1 = "Invalid format.\n" \
 		   	      "To view more usage formats in each feature, txt 'More feature-number'; Ex: 'More 1' for Bus Directions!"
  
   INVALID_MORE_MSG_FORMAT_2 = "Uh-oh! Currently we support only 3 features. Watch out for more!"
