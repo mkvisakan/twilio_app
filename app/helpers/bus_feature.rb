@@ -28,6 +28,9 @@ module BusFeature
       txt_contents = []
       feature_params = extract_bus_params(msg)
       logger.info ">>>>>TEXTME_LOG_INFORMATION : Feature Params : #{feature_params}" 
+      #invalid bus nos taken from https://www.cityofmadison.com/metro/schedules/schedules.cfm
+      invalid_bus_nos = [9,23,24,41,42,43,45,46,49,53,54,60,61,62,64,65,66,69,76,77,79,83]
+      
       if found_required_bus_params?(feature_params)
          sms_api_url    = TextHelper.get_url_sms(feature_params['stop_id'])
          json_obj       = do_request(sms_api_url)
@@ -52,11 +55,22 @@ module BusFeature
              end
 	  end
 	  if i<=0
-              txt_contents << "Invalid bus number or given bus(es) not available at this hour."
-	  end
+		invalid_bus= bus_nos & invalid_bus_nos
+                if invalid_bus.empty?
+                        range = 1...84
+                        if (bus_nos & range.to_a).present?
+                                txt_contents << "Shoot! Bus not available at this hour. Need direction to some place? Text 'More 2'."
+                        else
+                                txt_contents << "Snap! Can't find routes. Check your bus number, may be?"
+                        end
+                else
+                         txt_contents << "Snap! Can't find routes. Check your bus number, may be?"
+                end
+          end
+
          else json_obj.include? "description"
 		 if json_obj["description"].include? "No routes found for this stop"
-			txt_contents << "Buses not available at this hour."
+			txt_contents << "Shoot! Bus not available at this hour. Need direction to some place? Text 'More 2'"
 		 elsif json_obj["description"].include? "Unable to validate the request"
           		logger.info ">>>>>TEXTME_LOG_INFORMATION : ERROR : Unidentfied stop : #{msg}"
           		txt_contents << "Unidentified stop. Please try again with the correct stop-id."
