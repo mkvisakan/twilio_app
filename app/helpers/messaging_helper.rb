@@ -1,9 +1,9 @@
 module MessagingHelper
 
       #kumaresh test account
-      TWILIO_SID       = 'AC15a225ec77a2891ead8403d67723d2d0'
-      TWILIO_TOKEN     = "f1bffe6a8d0a28e9b6068a983cb3a99b"
-      TWILIO_PHONE_NO  = "6082162484"
+      #TWILIO_SID       = 'AC15a225ec77a2891ead8403d67723d2d0'
+      #TWILIO_TOKEN     = "f1bffe6a8d0a28e9b6068a983cb3a99b"
+      #TWILIO_PHONE_NO  = "6082162484"
 
       #Salini's test account
       #TWILIO_SID       =  'AC80655ad8c5919e905e13320efb8e91b5' #'AC95f0707fde5738dee612f7116f660cab'  
@@ -11,9 +11,9 @@ module MessagingHelper
       #TWILIO_PHONE_NO  = "7655885542" #"7655899090"
         
       #production account
-      #TWILIO_SID          = 'ACcf265d65051471141a150267c117ab82'
-      #TWILIO_TOKEN        = "5979bf88a02f53246d2700f0dc6e02ac"
-      #TWILIO_PHONE_NO     = "2625330030"
+      TWILIO_SID          = 'ACcf265d65051471141a150267c117ab82'
+      TWILIO_TOKEN        = "5979bf88a02f53246d2700f0dc6e02ac"
+      TWILIO_PHONE_NO     = "2625330030"
 
 
   def send_message(txt_contents, from_no)
