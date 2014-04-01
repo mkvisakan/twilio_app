@@ -1,4 +1,5 @@
 include RequestHelper
+include TextHelper
 
 module BusFeature
 
@@ -23,12 +24,12 @@ module BusFeature
    
   def get_arrival_time_from_sms_api(msg="")
       msg = msg.upcase
-      logger.info ">>>>>LOG_INFORMATION : Getting schedule information from SMSAPI..."
+      logger.info ">>>>>TEXTME_LOG_INFORMATION : Getting schedule information from SMSAPI..."
       txt_contents = []
       feature_params = extract_params(msg)
-      logger.info ">>>>>LOG_INFORMATION : Feature Params : #{feature_params}" 
+      logger.info ">>>>>TEXTME_LOG_INFORMATION : Feature Params : #{feature_params}" 
       if found_required_features?(feature_params)
-         sms_api_url    = "http://api.smsmybus.com/v1/getarrivals?key=visak&stopID=#{feature_params['stop_id']}"
+         sms_api_url    = TextHelper.get_url_sms(feature_params['stop_id'])
          json_obj       = do_request(sms_api_url)
 
 	 i=0;	 
@@ -57,13 +58,13 @@ module BusFeature
 		 if json_obj["description"].include? "No routes found for this stop"
 			txt_contents << "Buses not available at this hour."
 		 elsif json_obj["description"].include? "Unable to validate the request"
-          		logger.info ">>>>>LOG_INFORMATION : ERROR : Unidentfied stop : #{msg}"
+          		logger.info ">>>>>TEXTME_LOG_INFORMATION : ERROR : Unidentfied stop : #{msg}"
           		txt_contents << "Unidentified stop. Please try again with the correct stop-id."
 		 end
 	 end
       else
-          logger.info ">>>>>LOG_INFORMATION : ERROR : Invalid format : #{msg}"
-          txt_contents << "Invalid message format. Message format should be:\nBus (bus-numbers) at (stop-id).\nEg. Bus 2 19 at 178"
+          logger.info ">>>>>TEXTME_LOG_INFORMATION : ERROR : Invalid format : #{msg}"
+          txt_contents << TextHelper.get_invalid_format(bus)
       end
 
       return txt_contents

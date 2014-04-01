@@ -1,3 +1,5 @@
+include TextHelper
+
 module DirectionsFeature
 
   def extract_params(msg)
@@ -72,6 +74,10 @@ module DirectionsFeature
           d_stripped = d_stripped.gsub('</div>','.')
           d_stripped = d_stripped.gsub(/<.*">/,'. ')
           d_stripped = d_stripped.gsub('&nbsp;','')
+	 # if elt["maneuver"] and elt["maneuver"] != 0
+	       
+	 # end
+	      
           distance   = elt['distance']['text'];
           if d_stripped.downcase.start_with?('head') or d_stripped.downcase.start_with?('continue')
               txt_contents << "\n(#{count}) #{d_stripped} for #{distance}."
@@ -99,7 +105,7 @@ module DirectionsFeature
       if found_required_features?(feature_params)
 
           default_mode = fetch_transit_mode(feature_params)
-          google_api_url = "https://maps.googleapis.com/maps/api/directions/json?origin=#{feature_params['from_address']}&destination=#{feature_params['to_address']}&sensor=false&key=AIzaSyBYx4aypBnysn1OgzxR26ITEoPD0I60ugc&mode=#{default_mode}&departure_time=#{Time.now.to_i}"
+          google_api_url = TextHelper.get_url_directions(feature_params['from_address'], feature_params['to_address'], default_mode, Time.now.to_i)
           json_obj = do_request(google_api_url, log_result=false)
 
 	  if json_obj["status"].include?("OK")
@@ -114,14 +120,14 @@ module DirectionsFeature
               end
           elsif json_obj["status"].include?("ZERO_RESULTS")
                   logger.info ">>>>>LOG_INFORMATION : Zero results : #{msg}"
-	          txt_contents << "Routes not found."	
+	          txt_contents << TextHelper.get_routes_not_found()
 	  else
               logger.info ">>>>>LOG_INFORMATION : ERROR : Unidentified start/end location : #{msg}"
-              txt_contents << "Unidentified source/destination location. Please try again with city/state information."
+              txt_contents << TextHelper.get_unident_loc()
           end
       else
           logger.info ">>>>>LOG_INFORMATION : ERROR : Invalid format : #{msg}"
-          txt_contents << "Invalid message format. Message format should be:\nFrom (from-addr) to (to-addr) by car/bus/bike/walk.\nEg. From skydeck chicago to navy pier by car"
+          txt_contents << TextHelper.get_invalid_format("directions") 
       end
       return txt_contents
   end
