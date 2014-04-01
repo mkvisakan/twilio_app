@@ -1,6 +1,6 @@
 module NearbyFeature
 
-  def extract_params(msg)
+  def extract_nearby_params(msg)
       nearby_regex = /FIND *(\d*) *(.*)/
       feature_params = Hash.new
       data_list      = msg.scan(nearby_regex)
@@ -13,7 +13,7 @@ module NearbyFeature
       return feature_params
   end
 
-  def found_required_features?(feature_params)
+  def found_required_nearby_params?(feature_params)
       if feature_params.include?('query')
           return true
       end
@@ -44,10 +44,10 @@ module NearbyFeature
       logger.info ">>>>>LOG_INFORMATION : Getting nearby results from google API..."
       msg = msg.upcase
       txt_contents = []
-      feature_params = extract_params(msg)
+      feature_params = extract_nearby_params(msg)
       logger.info ">>>>>LOG_INFORMATION : Feature Params : #{feature_params}" 
       default_no_of_results =5	
-      if found_required_features?(feature_params)
+      if found_required_nearby_params?(feature_params)
 
           if feature_params.include?('num_results')
 	      default_no_of_results =  feature_params['num_results']

@@ -2,7 +2,7 @@ include RequestHelper
 
 module BusFeature
 
-  def extract_params(msg)
+  def extract_bus_params(msg)
       bus_regex = /(\d+)/
       stop_regex = /(\d+|SOTP|NOTP|WETP|EATP)/
       feature_params = Hash.new
@@ -14,7 +14,7 @@ module BusFeature
       return feature_params
   end
 
-  def found_required_features?(feature_params)
+  def found_required_bus_params?(feature_params)
       if feature_params.include?('stop_id')
           return true
       end
@@ -25,9 +25,9 @@ module BusFeature
       msg = msg.upcase
       logger.info ">>>>>LOG_INFORMATION : Getting schedule information from SMSAPI..."
       txt_contents = []
-      feature_params = extract_params(msg)
+      feature_params = extract_bus_params(msg)
       logger.info ">>>>>LOG_INFORMATION : Feature Params : #{feature_params}" 
-      if found_required_features?(feature_params)
+      if found_required_bus_params?(feature_params)
          sms_api_url    = "http://api.smsmybus.com/v1/getarrivals?key=visak&stopID=#{feature_params['stop_id']}"
          json_obj       = do_request(sms_api_url)
 

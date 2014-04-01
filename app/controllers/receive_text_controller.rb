@@ -26,7 +26,7 @@ class ReceiveTextController < ApplicationController
         if feature_type == BUS_FEATURE
            txt_contents = get_arrival_time_from_sms_api(msg)
         elsif feature_type == DIRECTIONS_FEATURE
-           txt_contents = get_directions_from_google_api(msg)
+           txt_contents = get_directions_from_google_api(msg, params)
         elsif feature_type == NEARBY_FEATURE
            txt_contents = get_nearby_from_google_api(msg)
 	elsif feature_type == HELP_FEATURE
