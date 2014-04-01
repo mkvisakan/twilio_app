@@ -26,9 +26,9 @@ module BusFeature
       msg = msg.upcase
       logger.info ">>>>>TEXTME_LOG_INFORMATION : Getting schedule information from SMSAPI..."
       txt_contents = []
-      feature_params = extract_params(msg)
+      feature_params = extract_bus_params(msg)
       logger.info ">>>>>TEXTME_LOG_INFORMATION : Feature Params : #{feature_params}" 
-      if found_required_features?(feature_params)
+      if found_required_bus_params?(feature_params)
          sms_api_url    = TextHelper.get_url_sms(feature_params['stop_id'])
          json_obj       = do_request(sms_api_url)
 
