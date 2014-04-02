@@ -74,6 +74,7 @@ module DirectionsFeature
           d_stripped = d_stripped.gsub('</div>','.')
           d_stripped = d_stripped.gsub(/<.*">/,'. ')
           d_stripped = d_stripped.gsub('&nbsp;','')
+	
 	  if elt["maneuver"] and elt["maneuver"] != 0
 	      d_stripped = d_stripped.gsub(/^Turn/, '').strip()
 	      if elt["maneuver"].eql?  "turn-left" 

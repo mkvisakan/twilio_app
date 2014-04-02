@@ -34,9 +34,9 @@ class ReceiveTextController < ApplicationController
         elsif feature_type == NEARBY_FEATURE
            txt_contents = get_nearby_from_google_api(msg)
 	elsif feature_type == HELP_FEATURE
-	   txt_contents = ["Howdy! ",welcome_text]
+	   txt_contents = ["Howdy! Lets get you started. ",welcome_text]
 	elsif feature_type == HELLO_FEATURE
-	   txt_contents = ["Hey there! ", welcome_text]
+	   txt_contents = ["Hey there! Lets get you started. ", welcome_text]
 	elsif feature_type == MORE_FEATURE
 	   txt_contents = get_more_help(msg)
 	elsif feature_type == FUN_FEATURE

@@ -1,7 +1,6 @@
 module TextHelper
 
-  WELCOME_TXT ="Lets get you started. " \
-               "Text us:\n" \
+  WELCOME_TXT ="Text us:\n" \
                "1. Bus 2 at 178 (for Madison bus timings)\n" \
                "2. From skydeck chicago to navy pier by car (for directions)\n" \
                "3. Find 3 bars in boston (for nearby places)\n" \
