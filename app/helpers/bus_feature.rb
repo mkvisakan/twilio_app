@@ -28,6 +28,9 @@ module BusFeature
       txt_contents = []
       feature_params = extract_bus_params(msg)
       logger.info ">>>>>TEXTME_LOG_INFORMATION : Feature Params : #{feature_params}" 
+      #invalid bus nos taken from https://www.cityofmadison.com/metro/schedules/schedules.cfm
+      invalid_bus_nos = [9,23,24,41,42,43,45,46,49,53,54,60,61,62,64,65,66,69,76,77,79,83]
+      
       if found_required_bus_params?(feature_params)
          sms_api_url    = TextHelper.get_url_sms(feature_params['stop_id'])
          json_obj       = do_request(sms_api_url)
@@ -38,7 +41,7 @@ module BusFeature
              for elt in json_obj["stop"]["route"]
                  if feature_params['bus_nos'].include? elt['routeID'].to_i
 		    i= i+1
-                    txt_contents << "#{elt['routeID']} @ #{elt['arrivalTime']}\n "
+                    txt_contents << "#{elt['routeID']} @ #{elt['arrivalTime']}\n"
                  end
              end
 	  else
@@ -52,11 +55,23 @@ module BusFeature
              end
 	  end
 	  if i<=0
-              txt_contents << "Invalid bus number or given bus(es) not available at this hour."
-	  end
+		bus_nos = feature_params['bus_nos']
+		invalid_bus= bus_nos & invalid_bus_nos
+                if invalid_bus.empty?
+                        range = 1...84
+                        if (bus_nos & range.to_a).present?
+                                txt_contents << "Shoot! Bus not available at this hour. Need direction to some place? Text 'More 2'."
+                        else
+                                txt_contents << "Snap! Can't find routes. Check your bus number, may be?"
+                        end
+                else
+                         txt_contents << "Snap! Can't find routes. Check your bus number, may be?"
+                end
+          end
+
          else json_obj.include? "description"
 		 if json_obj["description"].include? "No routes found for this stop"
-			txt_contents << "Buses not available at this hour.\n"
+			txt_contents << "Shoot! Bus not available at this hour. Need direction to some place? Text 'More 2' \n"
 		 elsif json_obj["description"].include? "Unable to validate the request"
           		logger.info ">>>>>TEXTME_LOG_INFORMATION : ERROR : Unidentfied stop : #{msg}"
           		txt_contents << "Unidentified stop. Please try again with the correct stop-id."
@@ -72,19 +87,15 @@ module BusFeature
   def get_bus_stopid_by_street_name(msg="")
         logger.info ">>>>>LOG_INFORMATION: Getting nearby places from google API..."
         txt_contents = []
-	#txt_contents << "Bus \n"
         msg_contents = msg.split('AT',2)[1].strip()
-	## Fixes for getting better results
 	if (msg_contents =~ /(.*)&(.*)/)
 		msg_contents["&"]="and"
 	end
-#	logger.info ">>>>>LOG_INFORMATION: #{msg_contents}"
         google_api_url = "https://maps.googleapis.com/maps/api/place/textsearch/json?query=#{msg_contents} madison wi&sensor=true&key=AIzaSyDvHC2dZhR9I0uMBtLxp0Bq1qulebuTRQY"
         logger.info ">>>>>LOG_INFORMATION : URL: #{URI::encode(google_api_url)}"
         url_open = open(URI::encode(google_api_url))
         json_obj = JSON.load(url_open)
 	stop_name = []
-        #logger.info ">>>>>LOG_INFORMATION : JSON_RESULT: #{json_obj}"
         if json_obj.include?("results") && json_obj["results"].any?
           json_results = json_obj["results"]
           counter = 0
@@ -100,14 +111,6 @@ module BusFeature
 	  if counter>1
 	    lev_dist=lev(stop_name[0], stop_name[1])
 	  end
-	 # logger.info ">>>>>LOG_INFORMATION : Lev distance #{lev_dist}"
-	 # if lev_dist >0 and lev_dist <5
-	#	txt_contents << "If you meant"
-	#	txt_contents << "\"#{stop_name[0]}\", Text \"#{msg.split('AT',2)[0].strip()} AT #{stop_name[0]}\""
-	#	txt_contents << "If you meant"
-	#	txt_contents << "\"#{stop_name[1]}\", Text \"#{msg.split('AT',2)[0].strip()} AT #{stop_name[1]}\""
-	#	 txt_contents << "Otherwise, Please specify a detailed address"
-	 # else
 	  counter = 0 
           for elt in json_results
               counter += 1
@@ -129,7 +132,6 @@ module BusFeature
 			end
 			stopid = elt1["stopID"]
 			stop_name = Bus_stop_names_madison.find_by_stop_id(stopid).stop_name
-#			logger.info ">>>>>TEXTME_LOG_INFORMATION : #{stop_name}" 
 			intersection = elt1["intersection"]
 		        msg_contents1 = "#{msg.split('AT',2)[0].strip()} AT #{stopid}"
 			bus_timings = []
@@ -137,12 +139,11 @@ module BusFeature
 			valid = 0
 			valid_timings = []
 			count=0;
-#			logger.info ">>>>>TEXTME_LOG_INFORMATION : #{bus_timings}" 
 			for bus in bus_timings
 				if count>=5
 					break
 				end
-				if not (bus =~ /(.*)Invalid(.*)/)
+				if not (bus =~ /(.*)(Invalid|Shoot)(.*)/)
 					count +=1
 					valid_timings << bus
 					valid = 1
@@ -155,7 +156,6 @@ module BusFeature
 		 end
 	     end
 	  end	
-	  #end	
       else
 	  logger.info ">>>>>TEXTME_LOG_INFORMATION : ERROR : Invalid format : #{msg}"
           txt_contents << TextHelper.get_invalid_format(bus)
@@ -168,7 +168,6 @@ module BusFeature
   end
 
 def lev(s, t)
-#  logger.info ">>>>>LOG_INFORMATION : Lev distance #{s} #{t}"
   m = s.length
   n = t.length
   return m if n == 0

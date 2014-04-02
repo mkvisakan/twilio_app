@@ -31,8 +31,9 @@ module NearbyFeature
                   break
               end
 	      formatted_address = elt["formatted_address"]
- 	      address = formatted_address.split(',')	
-              txt_contents << "(#{counter}) #{elt["name"]} at #{address[0].strip()}, #{address[1].strip()}, #{address[2].strip()}\n" # rated #{elt["rating"]}\n"
+ 	      address_list = formatted_address.split(',')	
+              *address, country = address_list
+              txt_contents << "(#{counter}) #{elt["name"]} at #{address.join(', ').strip()}\n" # rated #{elt["rating"]}\n"
           end
       elsif json_obj["status"].include? "ZERO_RESULTS"
 	  txt_contents << "Results not found."

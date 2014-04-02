@@ -11,14 +11,14 @@ module MessagingHelper
       #TWILIO_PHONE_NO  = "7655885542" #"7655899090"
         
       #production account
-      #TWILIO_SID          = 'ACcf265d65051471141a150267c117ab82'
-      #TWILIO_TOKEN        = "5979bf88a02f53246d2700f0dc6e02ac"
-      #TWILIO_PHONE_NO     = "2625330030"
+      TWILIO_SID          = 'ACcf265d65051471141a150267c117ab82'
+      TWILIO_TOKEN        = "5979bf88a02f53246d2700f0dc6e02ac"
+      TWILIO_PHONE_NO     = "2625330030"
 
 	# vidhya test account
-	TWILIO_SID = 'AC99ad1e28338f18a73883a61ce44be68e'
-        TWILIO_TOKEN = "68f0ffd1a97584587a6c23b16a512076"
-        TWILIO_PHONE_NO = "9252318027"
+	#TWILIO_SID = 'AC99ad1e28338f18a73883a61ce44be68e'
+        #TWILIO_TOKEN = "68f0ffd1a97584587a6c23b16a512076"
+        #TWILIO_PHONE_NO = "9252318027"
 
   def send_message(txt_contents, from_no)
       txt_msg = txt_contents.join('')

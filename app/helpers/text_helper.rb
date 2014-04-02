@@ -1,19 +1,19 @@
 module TextHelper
 
-  WELCOME_TXT ="Welcome to TextMe!\n" \
-	       "Txt us what u want, we'll get it 2 u asap!\n" \
-               "Usage:\n" \
-               "1. Bus directions (in Madison)? Bus 2 19 at 2717\n" \
-               "2. Driving directions? From skydeck chicago to navy pier by car\n" \
-               "3. Nearby places? Find 3 bars in boston\n" \
-               "To view more usage formats in each feature, txt 'More feature-number'; Ex: 'More 1' for Bus Directions!"
+  WELCOME_TXT ="Lets get you started. " \
+               "Text us:\n" \
+               "1. Bus 2 at 178 (for Madison bus timings)\n" \
+               "2. From skydeck chicago to navy pier by car (for directions)\n" \
+               "3. Find 3 bars in boston (for nearby places)\n" \
+               "For more details, text 'More #feature'; Eg:'More 1' for Bus Timings"
 
   THANK_YOU = "Thank you! We will get back to you shortly with the information!"
   
   #Example Usage Format : 
   BUS_USAGE_FORMAT =    "Supported formats for real-time bus info for Madison:\n" \
 			"1. Bus 15 10 at 178 - Timings for buses 15 & 10 at stop-id 178\n" \
-			"2. Bus at 2146 - Timings for the next 10 buses at stop-id 2146"
+			"2. Bus at 2146 - Timings for the next 10 buses at stop-id 2146\n" \
+			"3. Bus 2 at university at orchard -  Timings for bus 2 at bus stations near University & Orchard"
 
   DRIVING_USAGE_FORMAT =   "To get directions, text:\n" \
 			   "From (location) to (location) by bike/car/walk.\n" \
@@ -26,7 +26,7 @@ module TextHelper
 			"2. Find 2 hair cuts in 98006\n" \
 			"3. Find parking near central park. Default number of results is 5 if not specified."
 
-  INVALID_MORE_MSG_FORMAT_1 = "Oops! Invalid format.\n" \
+  INVALID_MORE_MSG_FORMAT_1 = "Invalid format.\n" \
 		   	      "To view more usage formats in each feature, txt 'More feature-number'; Ex: 'More 1' for Bus Directions!"
  
   INVALID_MORE_MSG_FORMAT_2 = "Uh-oh! Currently we support only 3 features. Watch out for more!"
@@ -74,7 +74,7 @@ module TextHelper
   end
  
   def get_url_sms(stop_id)
-	sms_url = "http://api.smsmybus.com/v1/getarrivals?key=bontrager&stopID=#{stop_id}"
+	sms_url = "http://api.smsmybus.com/v1/getarrivals?key=visak&stopID=#{stop_id}"
   end
   
   def get_results_not_found()

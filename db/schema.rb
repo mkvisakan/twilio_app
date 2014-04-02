@@ -23,4 +23,18 @@ ActiveRecord::Schema.define(version: 20140401211819) do
     t.datetime "updated_at"
   end
 
+  create_table "bus_stop_names_madisons", id: false, force: true do |t|
+    t.integer  "id"
+    t.string   "stop_id"
+    t.string   "stop_name"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "fun_data", id: false, force: true do |t|
+    t.integer "id",                default: "nextval('fun_data_id_seq'::regclass)", null: false
+    t.string  "type",  limit: 50
+    t.string  "story", limit: 500
+  end
+
 end

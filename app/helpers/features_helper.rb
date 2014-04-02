@@ -1,5 +1,6 @@
 require 'open-uri'
 require 'json'
+
 module FeaturesHelper
 
   BUS_FEATURE        = 1
@@ -9,7 +10,7 @@ module FeaturesHelper
   HELLO_FEATURE      = 5
   MORE_FEATURE       = 6
   INVALID_FEATURE    = 7
-
+  FUN_FEATURE	     = 8
   def identify_request_type(msg)
       msg = msg.strip().upcase
       if is_bus_feature?(msg)
@@ -22,6 +23,8 @@ module FeaturesHelper
           return HELP_FEATURE
       elsif is_hello_feature?(msg)
           return HELLO_FEATURE
+      elsif is_fun_feature?(msg)
+	  return FUN_FEATURE
       elsif is_more_feature?(msg)
           return MORE_FEATURE
       else
@@ -30,8 +33,9 @@ module FeaturesHelper
   end
 
   def start_with?(msg, kwds)
+      msg = msg +" "
       for kwd in kwds
-          if msg.start_with?(kwd.upcase)
+          if msg.start_with?("#{kwd.upcase} ") 
               return true
           end 
       end 
@@ -63,8 +67,9 @@ module FeaturesHelper
   end
 
   def is_help_feature?(msg)
-      kwds = ['HELP', 'HLP']
+      kwds = ['HELP', 'HELPME', 'HLP']
       if start_with?(msg, kwds)
+      #if (msg.strip=~ /(HELP|HLP)(.*)/)
           return true
       end
       return false
@@ -73,7 +78,10 @@ module FeaturesHelper
   def is_hello_feature?(msg)
       kwds = ['HELLO', 'HI']
       if start_with?(msg, kwds)
+      #if (msg.strip=~ /(HELLO|HI)(.*)/)
           return true
+      else
+	 puts "<<< LOG: #{msg}" 
       end
       return false
   end
@@ -86,4 +94,10 @@ module FeaturesHelper
       return false
   end
 
+  def is_fun_feature?(msg)
+      if (msg.strip=~ /(FUN|ENTERTAIN|JOKE)(.*)/)
+          return true
+      end
+      return false
+  end
 end

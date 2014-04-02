@@ -1,2 +1,2 @@
-class FunData < ActiveRecord::Base
+class Fun_data < ActiveRecord::Base
 end
