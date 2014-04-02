@@ -1,0 +1,19 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Id:</strong>
+  <%= @fun_datum.id %>
+</p>
+
+<p>
+  <strong>Type:</strong>
+  <%= @fun_datum.type %>
+</p>
+
+<p>
+  <strong>Story:</strong>
+  <%= @fun_datum.story %>
+</p>
+
+<%= link_to 'Edit', edit_fun_datum_path(@fun_datum) %> |
+<%= link_to 'Back', fun_data_path %>

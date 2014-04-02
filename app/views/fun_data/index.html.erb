@@ -1,0 +1,31 @@
+<h1>Listing fun_data</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Id</th>
+      <th>Type</th>
+      <th>Story</th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @fun_data.each do |fun_datum| %>
+      <tr>
+        <td><%= fun_datum.id %></td>
+        <td><%= fun_datum.type %></td>
+        <td><%= fun_datum.story %></td>
+        <td><%= link_to 'Show', fun_datum %></td>
+        <td><%= link_to 'Edit', edit_fun_datum_path(fun_datum) %></td>
+        <td><%= link_to 'Destroy', fun_datum, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New Fun datum', new_fun_datum_path %>

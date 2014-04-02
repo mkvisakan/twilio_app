@@ -1,8 +1,9 @@
 include RequestHelper
+include TextHelper
 
 module BusFeature
 
-  def extract_params(msg)
+  def extract_bus_params(msg)
       bus_regex = /(\d+)/
       stop_regex = /(\d+|SOTP|NOTP|WETP|EATP)/
       feature_params = Hash.new
@@ -14,7 +15,7 @@ module BusFeature
       return feature_params
   end
 
-  def found_required_features?(feature_params)
+  def found_required_bus_params?(feature_params)
       if feature_params.include?('stop_id')
           return true
       end
@@ -25,16 +26,10 @@ module BusFeature
       msg = msg.upcase
       logger.info ">>>>>LOG_INFORMATION : Getting schedule information from SMSAPI...#{msg}"
       txt_contents = []
-      feature_params = extract_params(msg)
-	feature_params = Hash.new
-      if msg.include? "BUS"
-         text = msg.split('BUS')[1].strip()
-         feature_params['stop_id'] = text.split('AT')[1].strip()
-         feature_params['bus_nos'] = text.split('AT')[0].strip().split(/,| /).map {|s| s.strip().to_i}
-      end
-      logger.info ">>>>>LOG_INFORMATION : Feature Params : #{feature_params}" 
-      if feature_params.include?('stop_id')
-         sms_api_url    = "http://api.smsmybus.com/v1/getarrivals?key=visak&stopID=#{feature_params['stop_id']}"
+      feature_params = extract_bus_params(msg)
+      logger.info ">>>>>TEXTME_LOG_INFORMATION : Feature Params : #{feature_params}" 
+      if found_required_bus_params?(feature_params)
+         sms_api_url    = TextHelper.get_url_sms(feature_params['stop_id'])
          json_obj       = do_request(sms_api_url)
 
 	 i=0;	 
@@ -43,7 +38,7 @@ module BusFeature
              for elt in json_obj["stop"]["route"]
                  if feature_params['bus_nos'].include? elt['routeID'].to_i
 		    i= i+1
-                    txt_contents << "#{elt['routeID']} at #{elt['arrivalTime']}\n "
+                    txt_contents << "#{elt['routeID']} @ #{elt['arrivalTime']}\n "
                  end
              end
 	  else
@@ -53,7 +48,7 @@ module BusFeature
 		    end
 		    break if i == 10
 		    i= i+1
-                    txt_contents << "#{elt['routeID']} at #{elt['arrivalTime']}\n"
+                    txt_contents << "#{elt['routeID']} @ #{elt['arrivalTime']}\n"
              end
 	  end
 	  if i<=0
@@ -61,15 +56,15 @@ module BusFeature
 	  end
          else json_obj.include? "description"
 		 if json_obj["description"].include? "No routes found for this stop"
-			txt_contents << "Buses not available at this hour."
+			txt_contents << "Buses not available at this hour.\n"
 		 elsif json_obj["description"].include? "Unable to validate the request"
-          		logger.info ">>>>>LOG_INFORMATION : ERROR : Unidentfied stop : #{msg}"
+          		logger.info ">>>>>TEXTME_LOG_INFORMATION : ERROR : Unidentfied stop : #{msg}"
           		txt_contents << "Unidentified stop. Please try again with the correct stop-id."
 		 end
 	 end
       else
-          logger.info ">>>>>LOG_INFORMATION : ERROR : Invalid format : #{msg}"
-          txt_contents << "Invalid message format. Message format should be:\nBus (bus-numbers) at (stop-id).\nEg. Bus 2 19 at 178"
+          logger.info ">>>>>TEXTME_LOG_INFORMATION : ERROR : Invalid format : #{msg}"
+          txt_contents << TextHelper.get_invalid_format(bus)
       end
 
       return txt_contents
@@ -77,12 +72,13 @@ module BusFeature
   def get_bus_stopid_by_street_name(msg="")
         logger.info ">>>>>LOG_INFORMATION: Getting nearby places from google API..."
         txt_contents = []
-        msg_contents = msg.split('AT')[1].strip()
+	#txt_contents << "Bus \n"
+        msg_contents = msg.split('AT',2)[1].strip()
 	## Fixes for getting better results
 	if (msg_contents =~ /(.*)&(.*)/)
-		msg_contents["&"]=""
+		msg_contents["&"]="and"
 	end
-	logger.info ">>>>>LOG_INFORMATION: #{msg_contents}"
+#	logger.info ">>>>>LOG_INFORMATION: #{msg_contents}"
         google_api_url = "https://maps.googleapis.com/maps/api/place/textsearch/json?query=#{msg_contents} madison wi&sensor=true&key=AIzaSyDvHC2dZhR9I0uMBtLxp0Bq1qulebuTRQY"
         logger.info ">>>>>LOG_INFORMATION : URL: #{URI::encode(google_api_url)}"
         url_open = open(URI::encode(google_api_url))
@@ -104,14 +100,14 @@ module BusFeature
 	  if counter>1
 	    lev_dist=lev(stop_name[0], stop_name[1])
 	  end
-	  logger.info ">>>>>LOG_INFORMATION : Lev distance #{lev_dist}"
-	  if lev_dist >0 and lev_dist <5
-		txt_contents << "If you meant"
-		txt_contents << "\"#{stop_name[0]}\", Text \"#{msg.split('AT')[0].strip()} AT #{stop_name[0]}\""
-		txt_contents << "If you meant"
-		txt_contents << "\"#{stop_name[1]}\", Text \"#{msg.split('AT')[0].strip()} AT #{stop_name[1]}\""
-		 txt_contents << "Otherwise, Please specify a detailed address"
-	  else
+	 # logger.info ">>>>>LOG_INFORMATION : Lev distance #{lev_dist}"
+	 # if lev_dist >0 and lev_dist <5
+	#	txt_contents << "If you meant"
+	#	txt_contents << "\"#{stop_name[0]}\", Text \"#{msg.split('AT',2)[0].strip()} AT #{stop_name[0]}\""
+	#	txt_contents << "If you meant"
+	#	txt_contents << "\"#{stop_name[1]}\", Text \"#{msg.split('AT',2)[0].strip()} AT #{stop_name[1]}\""
+	#	 txt_contents << "Otherwise, Please specify a detailed address"
+	 # else
 	  counter = 0 
           for elt in json_results
               counter += 1
@@ -121,32 +117,58 @@ module BusFeature
 	      
              lat= elt["geometry"]["location"]["lat"]
              lng= elt["geometry"]["location"]["lng"]
-	     sms_api_url    = "http://api.smsmybus.com/v1/getnearbystops?key=visak&lat=#{lat}&lon=#{lng}"
+	     sms_api_url    = "http://api.smsmybus.com/v1/getnearbystops?key=visak&radius=1000&lat=#{lat}&lon=#{lng}"
              json_obj       = do_request(sms_api_url)
 
        	     i=0;	 
              if json_obj.include? "stop"
                  for elt1 in json_obj["stop"]
                  	i=i+1
-		 	if i>=2
+		 	if i>2
 				break
 			end
 			stopid = elt1["stopID"]
-		        msg_contents1 = "#{msg.split('AT')[0].strip()} AT #{stopid}"
-			txt_contents = get_arrival_time_from_sms_api(msg_contents1) 
-			txt_contents << "STOP: #{stopid}"
+			stop_name = Bus_stop_names_madison.find_by_stop_id(stopid).stop_name
+#			logger.info ">>>>>TEXTME_LOG_INFORMATION : #{stop_name}" 
+			intersection = elt1["intersection"]
+		        msg_contents1 = "#{msg.split('AT',2)[0].strip()} AT #{stopid}"
+			bus_timings = []
+			bus_timings =  get_arrival_time_from_sms_api(msg_contents1)
+			valid = 0
+			valid_timings = []
+			count=0;
+#			logger.info ">>>>>TEXTME_LOG_INFORMATION : #{bus_timings}" 
+			for bus in bus_timings
+				if count>=5
+					break
+				end
+				if not (bus =~ /(.*)Invalid(.*)/)
+					count +=1
+					valid_timings << bus
+					valid = 1
+				end
+			end
+			if valid > 0
+				txt_contents << "#{stop_name}\n"
+				txt_contents << valid_timings
+			end
 		 end
 	     end
 	  end	
-	  end	
+	  #end	
       else
-          txt_contents << "Invalid message format. Message Format should be FINFINDxt>"
+	  logger.info ">>>>>TEXTME_LOG_INFORMATION : ERROR : Invalid format : #{msg}"
+          txt_contents << TextHelper.get_invalid_format(bus)
+      end
+      m = txt_contents.length 
+      if m==0	
+	txt_contents << "Can't find bus stations near this place. Try with a more detailed location info or with a stop id. Text - \'More bus\', to know more"
       end
       return txt_contents
   end
 
 def lev(s, t)
-  logger.info ">>>>>LOG_INFORMATION : Lev distance #{s} #{t}"
+#  logger.info ">>>>>LOG_INFORMATION : Lev distance #{s} #{t}"
   m = s.length
   n = t.length
   return m if n == 0
