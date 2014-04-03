@@ -99,18 +99,18 @@ module BusFeature
         if json_obj.include?("results") && json_obj["results"].any?
           json_results = json_obj["results"]
           counter = 0
-	  for elt in json_results
-              counter += 1
-              if counter > 2
-                  break
-              end
-	      stop_name << elt["name"]
+	#  for elt in json_results
+        #      counter += 1
+        #      if counter > 2
+        #          break
+        #      end
+	#      stop_name << elt["name"]
 		 
-	  end
-	  lev_dist=0
-	  if counter>1
-	    lev_dist=lev(stop_name[0], stop_name[1])
-	  end
+	#  end
+	#  lev_dist=0
+	#  if counter>1
+	#    lev_dist=lev(stop_name[0], stop_name[1])
+	#  end
 	  counter = 0 
           for elt in json_results
               counter += 1
