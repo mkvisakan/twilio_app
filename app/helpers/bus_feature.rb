@@ -131,7 +131,7 @@ module BusFeature
 				break
 			end
 			stopid = elt1["stopID"]
-			stop_name = Bus_stop_names_madison.find_by_stop_id(stopid).stop_name
+			stop_name = Bus_stop_names_madison.find_by_id(stopid).stop_name
 			intersection = elt1["intersection"]
 		        msg_contents1 = "#{msg.split('AT',2)[0].strip()} AT #{stopid}"
 			bus_timings = []
