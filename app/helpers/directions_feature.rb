@@ -95,9 +95,8 @@ module DirectionsFeature
               txt_contents << "\n(#{count}) #{d_stripped}. Stay for #{distance}."
 	  end
       end
-      d_stripped.gsub("Destination will be on the right.", "")
-      d_stripped.gsub("Destination will be on the left.", "")
-
+	d_stripped=d_stripped.gsub("Destination will be on the right.", "")
+        d_stripped=d_stripped.gsub("Destination will be on the left.", "")
       if d_stripped.downcase.start_with?('head') or d_stripped.downcase.start_with?('continue')
           txt_contents.pop	
           txt_contents << "\n(#{count}) #{d_stripped}"
@@ -106,7 +105,7 @@ module DirectionsFeature
           txt_contents << "\n(#{count}) #{d_stripped}"
       end
       
-      txt_contents << ". In #{distance}, you will arrive at your destination."
+      txt_contents << "\nIn #{distance}, you will arrive at your destination."
       return txt_contents
   end
 

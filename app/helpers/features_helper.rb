@@ -67,7 +67,7 @@ module FeaturesHelper
   end
 
   def is_help_feature?(msg)
-      kwds = ['HELP', 'HELPME', 'HLP']
+      kwds = ['HOWDY', 'HELP', 'HELPME', 'HLP']
       if start_with?(msg, kwds)
       #if (msg.strip=~ /(HELP|HLP)(.*)/)
           return true
@@ -76,7 +76,7 @@ module FeaturesHelper
   end
 
   def is_hello_feature?(msg)
-      kwds = ['HELLO', 'HI']
+      kwds = ['HII', 'HEY','HAI','WHAT\'S UP', 'SUP','WASSUP', 'WHATS UP', 'YO','HELLO', 'HI']
       if start_with?(msg, kwds)
       #if (msg.strip=~ /(HELLO|HI)(.*)/)
           return true
@@ -95,7 +95,7 @@ module FeaturesHelper
   end
 
   def is_fun_feature?(msg)
-      if (msg.strip=~ /(FUN|ENTERTAIN|JOKE)(.*)/)
+      if (msg.strip=~ /(.*)(BORED|HUMOUR|HUMOR|FUN|ENTERTAIN|JOKE)(.*)/)
           return true
       end
       return false
