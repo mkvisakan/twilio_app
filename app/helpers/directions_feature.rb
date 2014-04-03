@@ -74,22 +74,20 @@ module DirectionsFeature
           d_stripped = d_stripped.gsub('</div>','.')
           d_stripped = d_stripped.gsub(/<.*">/,'. ')
           d_stripped = d_stripped.gsub('&nbsp;','')
-	
-	  if elt["maneuver"] and elt["maneuver"] != 0
-	      d_stripped = d_stripped.gsub(/^Turn/, '').strip()
-	      if elt["maneuver"].eql?  "turn-left" 
-		  d_stripped = d_stripped.gsub(/^left/,'<-')
-	      elsif elt["maneuver"].eql? "turn-slight-left" 
-		  d_stripped = d_stripped.gsub(/^Slight/,'')
-		  d_stripped = d_stripped.gsub(/^left/,'<~')
-	      elsif elt["maneuver"].eql? "turn-right" 
-		  d_stripped = d_stripped.gsub(/^right/,'->')
-	      elsif elt["maneuver"].eql? "turn-slight-right" 
-		  d_stripped = d_stripped.gsub(/^Slight/,'')
-		  d_stripped = d_stripped.gsub(/^right/,'~>')
-	      end     
-	  end
-	      
+	  #if elt["maneuver"] and elt["maneuver"] != 0
+	  #    d_stripped = d_stripped.gsub(/^Turn/, '').strip()
+	  #    if elt["maneuver"].eql?  "turn-left" 
+	  #	  d_stripped = d_stripped.gsub(/^left/,'<-')
+	  #    elsif elt["maneuver"].eql? "turn-slight-left" 
+	  #	  d_stripped = d_stripped.gsub(/^Slight/,'')
+     	  #	  d_stripped = d_stripped.gsub(/^left/,'<~')
+	  #   elsif elt["maneuver"].eql? "turn-right" 
+	  #	  d_stripped = d_stripped.gsub(/^right/,'->')
+	  #    elsif elt["maneuver"].eql? "turn-slight-right" 
+	  #	  d_stripped = d_stripped.gsub(/^Slight/,'')
+	  #	  d_stripped = d_stripped.gsub(/^right/,'~>')
+	  #   end     
+	  #end
           distance   = elt['distance']['text'];
           if d_stripped.downcase.start_with?('head') or d_stripped.downcase.start_with?('continue')
               txt_contents << "\n(#{count}) #{d_stripped} for #{distance}."

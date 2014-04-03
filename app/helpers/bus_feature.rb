@@ -81,15 +81,18 @@ module BusFeature
 	 end
       else
           logger.info ">>>>>TEXTME_LOG_INFORMATION : ERROR : Invalid format : #{msg}"
-          txt_contents << TextHelper.get_invalid_format(bus)
+          txt_contents << TextHelper.get_invalid_format("bus")
       end
 
       return txt_contents
   end
   def get_bus_stopid_by_street_name(msg="")
-        logger.info ">>>>>LOG_INFORMATION: Getting nearby places from google API..."
         txt_contents = []
-        msg_contents = msg.split('AT',2)[1].strip()
+        if not (msg =~ /(.*)AT(.*)/)
+		txt_contents << TextHelper.get_invalid_format("bus")
+	else
+        logger.info ">>>>>LOG_INFORMATION: Getting nearby places from google API..."
+	msg_contents = msg.split('AT',2)[1].strip()
 	if (msg_contents =~ /(.*)&(.*)/)
 		msg_contents["&"]="and"
 	end
@@ -164,7 +167,8 @@ module BusFeature
       end
       m = txt_contents.length 
       if m==0	
-	txt_contents << "Can't find bus stations near this place. Try with a more detailed location info or with a stop id. Text - \'More bus\', to know more"
+	txt_contents << "Can't find bus stations near this place. Try with a more detailed location info or with a stop id. Text - \'More 1\', to know more"
+      end
       end
       return txt_contents
   end

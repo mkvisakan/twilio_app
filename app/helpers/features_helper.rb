@@ -15,10 +15,10 @@ module FeaturesHelper
       msg = msg.strip().upcase
       if is_bus_feature?(msg)
           return BUS_FEATURE
-      elsif is_nearby_feature?(msg)
-          return NEARBY_FEATURE
       elsif is_directions_feature?(msg)
           return DIRECTIONS_FEATURE
+      elsif is_nearby_feature?(msg)
+          return NEARBY_FEATURE
       elsif is_help_feature?(msg)
           return HELP_FEATURE
       elsif is_hello_feature?(msg)
@@ -59,7 +59,7 @@ module FeaturesHelper
   end
 
   def is_directions_feature?(msg)
-      kwds = ['FROM', 'FRM']
+      kwds = ['GET DIRECTIONS', 'DIRECTIONS', 'FROM', 'FRM', 'GET ME DIRECTIONS', 'HOW TO GO']
       if start_with?(msg, kwds)
           return true
       end
