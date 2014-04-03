@@ -2197,56 +2197,55 @@ COPY bus_stop_names_madisons (id, stop_id, stop_name, created_at, updated_at) FR
 --
 
 COPY fun_data (id, fun_type, story) FROM stdin;
-1	Jokes	Girl: Do you believe in puppy love?\tBoy: I tried it once, but their assholes are too small.\t
-2	Jokes	Husband says; "When I'm gone you'll never find another man like me".\tWife replied; "What makes you think I'd want another man?"\t
-3	Jokes	A woman walks up to a guy in a blue bathing suit and says, "Did you know your eyes match your swim trunks?" He says, "Why? Are my eyes bulging?"\t
-4	Jokes	"I told my wife that a man is like a fine wine... I always get better with age. The next day, she locked me in the wine cellar."\t
-5	Jokes	Innkeeper: The room is $15. a night. It's $5. if you make your own bed.\tGuest: I'll make my own bed.\tInnkeeper: Good. I'll get you some nails and wood.\t
-6	Jokes	Love thy neighbor all through the day... but first make sure her husband's away!\t
-7	Jokes	"Waiter! This coffee tastes like mud." "Yes sir, it's fresh ground."\t
-8	Jokes	Wife: Give me some money. I want to buy a bra.\tHusband: Why? You have nothing to put in it!\tWife: You wear shorts!\t
-9	Jokes	I wonder what fish smelled like before women went swimming?\t
-10	Jokes	HUSBAND: Shall we try a different position tonight?\tWIFE: That's a good i\tdea... you stand by the ironing board while I sit on the sofa and fart.\t
-11	Jokes	A lady says to the psychiatrist, "I think I might be a nymphomaniac." He says, "I'll see what I can do to help you. My fee is eighty dollars an hour." She says, "How much for all night?"\t
-12	Jokes	A reporter was interviewing a 104 year-old woman: "And what do you think is the best thing about being 104?" She simply replied, "No peer pressure."\t
-13	Jokes	A couple is lying in bed. The man says, "I am going to make you the happiest woman in the world" The woman says, "I'll miss you."\t
-14	Jokes	"Hey Bill... Do you talk to your wife while you are having sex?"\t"Only if there's a phone handy", Bill replied.\t
-15	Jokes	A man speaks frantically into the phone, "My wife is pregnant, and her contractions are only two minutes apart!" "Is this her first child?" the doctor queries. "No, you idiot!" the man shouts. "This is her husband!"\t
-16	Jokes	Two skeletons meet, and one asks the other, "Did you die before the Social Security reform, or after?"... "No, I'm still alive."\t
-17	Jokes	One man calls emergency:\t- Come immediately, my little son has swallowed a condom!\tAfter five minutes, the same man calls back:\t- It is OK, I found another one.\t
-18	Jokes	Waiter: "Tea or coffee, gentlemen?"\t1st customer: "I'll have tea."\t2nd customer: "Me, too. And be sure the glass is clean!"\t(Waiter exits, returns)\tWaiter: "Two teas. Which one had the clean glass?"\t
-19	Jokes	"Got anything to eat, lady?" asked the tramp.\t"Do you mind eating last week's leftovers?"\t"Not at all."\t"Good. Come back next week then"\t
-20	Jokes	A guy says, "I remember the first time I used alcohol as a substitute for women."\t"Yeah? What happened?" asked his friend.\tThe first guy replies, "Well, er, I got my penis stuck in the neck of the bottle."\t
-21	Jokes	Wife: There's something preying on my mind.\tHusband: Don't worry, it'll soon die of starvation.\t
-22	Jokes	Were do people with 1 leg work? At IHOP!\t
-23	Jokes	When I came back to Dublin I was court marshaled in my absence and sentenced to death in my absence, so I said they could shoot me in my absence.\t
-24	Jokes	I was walking down the street with my wife earlier when she accused me of being ashamed to be seen with her.\t"That's total bollocks" I replied.\tBy text, from across the road.\t
-25	Jokes	TEACHER: John, why are you doing your math multiplication on the floor? \tBOY: You told me to do it without using tables.\t
-26	Jokes	Going 2 d toilet is like an argument wiv ur GF. u start wiv lots of tension, sit,express ur feelings, create a lot of noise and finally. DROP THE MATTER..\t
-27	Jokes	A man in Hell asked Devil:Can I make a call to my Wife?After making call he asked how much to pay.Devil: Nothing, Hell to hell is Free.\t
-28	Horror	I begin tucking him into bed and he tells me, "Daddy check for monsters under my bed." I look underneath for his amusement and see him, another him, under the bed, staring back at me quivering and whispering, "Daddy there is somebody on my bed."\t
-29	Horror	I can’t move, breathe, speak or hear and it’s so dark all the time. If I knew it would be this lonely, I would have been cremated instead.\t
-30	Horror	She wondered why she was casting two shadows. Afterall, there was only a single lightbulb.\t
-31	Horror	There was a picture in my phone of me sleeping. I live alone.\t
-32	Horror	I just saw my reflection blink.\t
-33	Horror	She asked why I was breathing so heavily. I wasn’t.\t
-34	Horror	You get home, tired after a long day’s work and ready for a relaxing night alone. You reach for the light switch, but another hand is already there.\t
-35	Horror	My wife woke me up last night to tell me there was an intruder in our house. She was murdered by an intruder 2 years ago.\t
-36	Horror	You hear your mom calling you into the kitchen. As you are heading down the stairs you hear a whisper from the closet saying “Don’t go down there honey, I heard it too.”\t
-37	Horror	“I can’t sleep” she whispered, crawling into bed with me. I woke up cold, clutching the dress she was buried in.\t
-38	Jokes	﻿If you ever want to call a family meeting, just turn off the WIFI router and wait in the room in which it is located.\t
-39	Jokes	Boy: "I got an F in arithmetic." Father: "Why?" Boy: "The teacher asked 'How much is 2×3?' and I said '6'" Father: "But that's right!" Boy: "Then she asked me 'How much is 3×2?'" Father: "What's the fucking difference?" Boy: "That's exactly what I said!"\t
-40	Jokes	Teacher : whoever answers my next question, can go home. One boy throws his bag out the window Teacher : who just threw that?! Boy : Me! I’m going home now.\t
-41	Jokes	Behind every successful student, there is a deactivated Facebook account.\t
-42	Jokes	A new teacher was trying to make use of her psychology courses. She started her class by saying, "Everyone who thinks they're stupid, stand up!" After a few seconds, Little Johnny stood up.  The teacher said, "Do you think you're stupid, Little Johnny?" "No, ma'am, but I hate to see you standing there all by yourself!"\t
-43	Jokes	A wife send her husband an sms on a cold winter evening: "Windows frozen". The husband send answer back: "Pour some warm water over them". Some time later husband receives answer from his wife: "The computer is completely fucked now".\t
-44	Jokes	Little Johnny comes running into the house and asks, "Mommy, can little girls have babies?"  "No," says his mom, "of course not."  Little Johnny runs back outside yelling to his friends, "It's okay, we can play that game again!"\t
-45	CS_Jokes	Wife: Dear, this computer is not working as per my command.\tHusband: Exactly darling!\tits a computer, not a Husband..!!\t
-46	CS_Jokes	Dear Computer User,\tI Do Appreciate Your Kind Attitude Towards\tThe Keys 0f Keyboard,\tBut\t0ne question…\tWhy Do You Press All Keys Softly n Hit Me\tWith All Your Power?\tYours sincerely,\t‘ENTER’ Key!\t
-47	CS_Jokes	"Can I tell you a TCP Joke?"\t "Yes, Please tell me a TCP Joke."\t "Ok, I'll tell you a TCP Joke."\t
-48	CS_Jokes	I can tell you a UDP joke but you might not get it.\t
-49	CS_Jokes	Customer: Once I do that, I'll get the internet on my computer, right?\tSupport Guy: Yes!\tCustomer: And will that be the latest version of the internet?\t
-50	CS_Jokes	You know you are a network engineer when your dog barks and you swear he's saying, "ARP ARP!". \t
+39	Jokes	Love thy neighbor all through the day... but first make sure her husband's away!\t
+40	Jokes	"Waiter! This coffee tastes like mud." "Yes sir, it's fresh ground."\t
+41	Jokes	Wife: Give me some money. I want to buy a bra.\tHusband: Why? You have nothing to put in it!\tWife: You wear shorts!\t
+42	Jokes	A lady says to the psychiatrist, "I think I might be a nymphomaniac." He says, "I'll see what I can do to help you. My fee is eighty dollars an hour." She says, "How much for all night?"\t
+43	Jokes	A couple is lying in bed. The man says, "I am going to make you the happiest woman in the world" The woman says, "I'll miss you."\t
+44	Jokes	A man speaks frantically into the phone, "My wife is pregnant, and her contractions are only two minutes apart!" "Is this her first child?" the doctor queries. "No, you idiot!" the man shouts. "This is her husband!"\t
+45	Jokes	Waiter: "Tea or coffee, gentlemen?"\t1st customer: "I'll have tea."\t2nd customer: "Me, too. And be sure the glass is clean!"\t(Waiter exits, returns)\tWaiter: "Two teas. Which one had the clean glass?"\t
+46	Jokes	"Got anything to eat, lady?" asked the tramp.\t"Do you mind eating last week's leftovers?"\t"Not at all."\t"Good. Come back next week then"\t
+47	Jokes	Were do people with 1 leg work? At IHOP!\t
+48	Jokes	TEACHER: John, why are you doing your math multiplication on the floor? \tBOY: You told me to do it without using tables.\t
+49	Jokes	Going 2 d toilet is like an argument wiv ur GF. u start wiv lots of tension, sit,express ur feelings, create a lot of noise and finally. DROP THE MATTER..\t
+1	Jokes	If you ever want to call a family meeting, just turn off the WIFI router and wait in the room in which it is located.\t
+2	Jokes	Boy: "I got an F in arithmetic." Father: "Why?" Boy: "The teacher asked 'How much is 2×3?' and I said '6'" Father: "But that's right!" Boy: "Then she asked me 'How much is 3×2?'" Father: "What's the fucking difference?" Boy: "That's exactly what I said!"\t
+3	Jokes	Teacher : whoever answers my next question, can go home. One boy throws his bag out the window Teacher : who just threw that?! Boy : Me! I’m going home now.\t
+4	Jokes	Behind every successful student, there is a deactivated Facebook account.\t
+5	Jokes	A new teacher was trying to make use of her psychology courses. She started her class by saying, "Everyone who thinks they're stupid, stand up!" After a few seconds, Little Johnny stood up.  The teacher said, "Do you think you're stupid, Little Johnny?" "No, ma'am, but I hate to see you standing there all by yourself!"\t
+6	Jokes	A wife send her husband an sms on a cold winter evening: "Windows frozen". The husband send answer back: "Pour some warm water over them". Some time later husband receives answer from his wife: "The computer is completely fucked now".\t
+7	Jokes	Little Johnny comes running into the house and asks, "Mommy, can little girls have babies?"  "No," says his mom, "of course not."  Little Johnny runs back outside yelling to his friends, "It's okay, we can play that game again!"\t
+8	Jokes	Hey! Wanna make $$$$$$ fast? Just follow my simple instructions. 1:Hold down the Shift key 2:Press the number 4 four times. It’s that easy.\t
+9	Jokes	If people could see the face I make when I read their facebook status updates, they would probably unfriend me.\t
+10	Jokes	I love it when someone’s laugh is funnier than the joke.\t
+11	Jokes	Brain is a wonderful organ. It starts working the moment you get up in the morning and does not stop until you get into the office.\t
+12	Jokes	It’s not true that I had nothing ON….. The radio was ON. :)\t
+13	Jokes	There are two types of human beings found on Facebook. One who gets enormous amount of likes and comments on their posts. And the others are men.\t
+14	Jokes	I wonder what happens when doctor’s wife eats an apple a day. :)\t
+15	Jokes	I hate people who steal my ideas, before I think of them.\t
+16	Jokes	I never let my best friend do stupid things … alone.\t
+17	Jokes	I did in the bed. I did it on the couch. I did it in the car. Texting is such an obsession. :)\t
+18	Jokes	How to sleep faster: Decorate your bedroom to look like a classroom.\t
+19	Jokes	Boyfriend: Do you think my salary is sufficient for you? Girlfriend: It’s sufficient for me but how will you survive?\t
+20	Jokes	Perfect boyfriend : Does not drink, does not smoke, does not cheat and also Does not exist :P\t
+21	Jokes	You dont realise how many clothes you have, until you wash them.\t
+22	Jokes	A hot secretary came angrily out of boss cabin. Her colleague asked: What Happened? You went inside in a happy mood. She replied: He asked me are you free tonight? I said absolutely free. That bastard gave me 45 pages to type!\t
+23	Jokes	My parents told me: “You’ve got to stop watching so much TV, and read more!” so I turned on the subtitles.\t
+24	Jokes	I never make the same mistake twice. Three, four times maybe. But never twice.\t
+25	Jokes	I think all woman can agree that bigger is better. Nobody wants a small bank account.\t
+26	Jokes	Those 8 seconds really become so longer when you wait for "Skip" option button on video sharing site!\t
+27	Jokes	Him: I kiss my Wife everyday before I leave for Office, what about you?\tMe : Me too, after you leave!!\t
+28	Jokes	I had a dream I was eating a giant marshmallow, when I woke up my pillow was missing!\t
+29	Jokes	A man telephoned the airline office and asked, “How long does it take to fly to Boston?” The clerk said, “Just a minute…” “Thank you,” the man said and hung up.\t
+30	Jokes	Wife: Dear, this computer is not working as per my command.\tHusband: Exactly darling!\tits a computer, not a Husband..!!\t
+31	Jokes	Dear Computer User,\tI Do Appreciate Your Kind Attitude Towards\tThe Keys 0f Keyboard,\tBut\t0ne question…\tWhy Do You Press All Keys Softly n Hit Me\tWith All Your Power?\tYours sincerely,\t‘ENTER’ Key!\t
+32	Jokes	"Can I tell you a TCP Joke?"\t "Yes, Please tell me a TCP Joke."\t "Ok, I'll tell you a TCP Joke."\t
+33	Jokes	I can tell you a UDP joke but you might not get it.\t
+34	Jokes	Customer: Once I do that, I'll get the internet on my computer, right?\tSupport Guy: Yes!\tCustomer: And will that be the latest version of the internet?\t
+35	Jokes	You know you are a network engineer when your dog barks and you swear he's saying, "ARP ARP!". \t
+36	Jokes	Husband says; "When I'm gone you'll never find another man like me".\tWife replied; "What makes you think I'd want another man?"\t
+37	Jokes	A woman walks up to a guy in a blue bathing suit and says, "Did you know your eyes match your swim trunks?" He says, "Why? Are my eyes bulging?"\t
+38	Jokes	Innkeeper: The room is $15. a night. It's $5. if you make your own bed.\tGuest: I'll make my own bed.\tInnkeeper: Good. I'll get you some nails and wood.\t
 \.
 
 
@@ -2254,7 +2253,7 @@ COPY fun_data (id, fun_type, story) FROM stdin;
 -- Name: fun_data_id_seq; Type: SEQUENCE SET; Schema: public; Owner: ubuntu
 --
 
-SELECT pg_catalog.setval('fun_data_id_seq', 50, true);
+SELECT pg_catalog.setval('fun_data_id_seq', 49, true);
 
 
 --
