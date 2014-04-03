@@ -75,6 +75,8 @@ module BusFeature
 		 elsif json_obj["description"].include? "Unable to validate the request"
           		logger.info ">>>>>TEXTME_LOG_INFORMATION : ERROR : Unidentfied stop : #{msg}"
           		txt_contents << "Unidentified stop. Please try again with the correct stop-id."
+		 elsif json_obj["description"].include? "The Metro service is not currently running"
+			txt_contents << "Shoot! Bus not available at this hour. Need direction to some place? Text 'More 2' \n"
 		 end
 	 end
       else

@@ -8,11 +8,11 @@ development:
   encoding: unicode
   database: textme
   pool: 5
-  username: ubuntu
+  username: postgres
 
 test:
   adapter: postgresql
   encoding: unicode
   database: textme
   pool: 5
-  username: ubuntu
+  username: postgres
