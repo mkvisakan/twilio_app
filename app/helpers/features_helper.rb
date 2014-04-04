@@ -35,7 +35,7 @@ module FeaturesHelper
   def start_with?(msg, kwds)
       msg = msg +" "
       for kwd in kwds
-          if msg.start_with?("#{kwd.upcase} ") 
+          if msg.start_with?("#{kwd.upcase}") 
               return true
           end 
       end 
@@ -59,7 +59,7 @@ module FeaturesHelper
   end
 
   def is_directions_feature?(msg)
-      kwds = ['GET DIRECTIONS', 'DIRECTIONS', 'FROM', 'FRM', 'GET ME DIRECTIONS', 'HOW TO GO']
+      kwds = ['GET DIRECTION', 'DIRECTIONS', 'FROM', 'FRM', 'GET ME DIRECTIONS', 'HOW TO GO']
       if start_with?(msg, kwds)
           return true
       end
@@ -76,7 +76,7 @@ module FeaturesHelper
   end
 
   def is_hello_feature?(msg)
-      kwds = ['HII', 'HEY','HAI','WHAT\'S UP', 'SUP','WASSUP', 'WHATS UP', 'YO','HELLO', 'HI']
+      kwds = ['HEY','HAI','WHAT\'S UP', 'SUP','WASSUP', 'WHATS UP', 'YO','HELLO', 'HI']
       if start_with?(msg, kwds)
       #if (msg.strip=~ /(HELLO|HI)(.*)/)
           return true

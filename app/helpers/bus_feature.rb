@@ -62,21 +62,19 @@ module BusFeature
                         if (bus_nos & range.to_a).present?
                                 txt_contents << "Shoot! Bus not available at this hour. Need direction to some place? Text 'More 2'."
                         else
-                                txt_contents << "Snap! Can't find routes. Check your bus number, may be?"
+                                txt_contents << "Snap! Can't find routes. Check your bus number, maybe?"
                         end
                 else
-                         txt_contents << "Snap! Can't find routes. Check your bus number, may be?"
+                         txt_contents << "Snap! Can't find routes. Check your bus number, maybe?"
                 end
           end
 
          else json_obj.include? "description"
-		 if json_obj["description"].include? "No routes found for this stop"
+		 if json_obj["description"].include? "No routes found for this stop" or  json_obj["description"].include? "The Metro service is not currently running"
 			txt_contents << "Shoot! Bus not available at this hour. Need direction to some place? Text 'More 2' \n"
 		 elsif json_obj["description"].include? "Unable to validate the request"
           		logger.info ">>>>>TEXTME_LOG_INFORMATION : ERROR : Unidentfied stop : #{msg}"
           		txt_contents << "Unidentified stop. Please try again with the correct stop-id."
-		 elsif json_obj["description"].include? "The Metro service is not currently running"
-			txt_contents << "Shoot! Bus not available at this hour. Need direction to some place? Text 'More 2' \n"
 		 end
 	 end
       else
@@ -88,11 +86,18 @@ module BusFeature
   end
   def get_bus_stopid_by_street_name(msg="")
         txt_contents = []
+	puts "#{msg}\n"
         if not (msg =~ /(.*)AT(.*)/)
 		txt_contents << TextHelper.get_invalid_format("bus")
 	else
         logger.info ">>>>>LOG_INFORMATION: Getting nearby places from google API..."
-	msg_contents = msg.split('AT',2)[1].strip()
+	msg_contents = msg.split('AT',2)[1]
+	puts "#{msg_contents}"
+	if msg_contents.nil? or msg_contents.empty?
+		txt_contents << "Uh-oh! Forgot to specify stop-id/stop-name?"
+		return txt_contents;
+	end
+	msg_contents = msg_contents.strip()
 	if (msg_contents =~ /(.*)&(.*)/)
 		msg_contents["&"]="and"
 	end

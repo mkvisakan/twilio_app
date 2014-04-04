@@ -3,6 +3,7 @@ include TextHelper
 module DirectionsFeature
 
   def extract_direction_params(msg)
+      msg= msg.gsub("FRM ", "FROM")
       dir_regex      = /FROM *(.*) *TO *(.*) */
       dir_mode_regex = /FROM *(.*) *TO *(.*) *BY *(.*) */
       feature_params = Hash.new
@@ -112,14 +113,15 @@ module DirectionsFeature
   def get_instructions(json_obj, default_mode)
       txt_contents = []
       if json_obj.include?("routes") && json_obj["routes"].any?
+      #    txt_contents << "From #{json_obj["routes"][0]["legs"][0]["start_address"]} to #{json_obj["routes"][0]["legs"][0]["end_address"]}"
           if default_mode.include?("transit")
-              txt_contents = get_transit_instructions(json_obj["routes"][0]["legs"][0]["steps"])
+              txt_contents << get_transit_instructions(json_obj["routes"][0]["legs"][0]["steps"])
 	  else
-              txt_contents = get_driving_instructions(json_obj["routes"][0]["legs"][0]["steps"])
+              txt_contents << get_driving_instructions(json_obj["routes"][0]["legs"][0]["steps"])
 	  end
       else
           logger.info ">>>>>LOG_INFORMATION : 'Routes not found in json result: #{msg}"
-	  txt_contents << "Routes not found."	
+	  txt_contents << "Dagnabbit! Routes not found. Try again with city/state info maybe? For examples, text 'More 2'."	
       end
       return txt_contents
   end
@@ -145,11 +147,12 @@ module DirectionsFeature
                   google_api_url = "https://maps.googleapis.com/maps/api/directions/json?origin=#{from_address}&destination=#{feature_params['to_address']}&sensor=false&key=AIzaSyBYx4aypBnysn1OgzxR26ITEoPD0I60ugc&mode=#{default_mode}&departure_time=#{Time.now.to_i}"
                   json_obj = do_request(google_api_url, log_result=false)
                   if json_obj["status"].include?("OK")
+		      txt_contents 
                       txt_contents = get_instructions(json_obj, default_mode)
                       txt_contents << "\nIf your location is not from #{params['FromCity']}, #{params['FromState']}, please include the appropriate <city, state> in the request.\n"
                   else
                       logger.info ">>>>>LOG_INFORMATION : Zero results after retry : #{msg}"
-   	              txt_contents << "Routes not found."	
+   	              txt_contents << "Dagnabbit! Routes not found. Try again with city/state info maybe? For examples, text 'More 2'."	
                   end
               else
                   logger.info ">>>>>LOG_INFORMATION : Zero results : #{msg}"

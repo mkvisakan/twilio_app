@@ -36,7 +36,7 @@ module NearbyFeature
               txt_contents << "(#{counter}) #{elt["name"]} at #{address.join(', ').strip()}\n" # rated #{elt["rating"]}\n"
           end
       elsif json_obj["status"].include? "ZERO_RESULTS"
-	  txt_contents << "Results not found."
+	  txt_contents << "Shoot! Results not found. Check out some examples by texting 'More 3'."
       end
       return txt_contents
   end
@@ -59,7 +59,7 @@ module NearbyFeature
           txt_contents = get_nearby_results(json_obj, default_no_of_results)
       else
           logger.info ">>>>>LOG_INFORMATION : ERROR : Invalid format : #{msg}"
-          txt_contents << "Invalid message format. Message format should be:\nFind (num_results) (query)\nEg. Find 3 restaurants near san francisco"
+          txt_contents << "Uh-oh! Invalid format. Usage:\nFind (number) (type of place) in/near (location/zipcode).\nExample: Find 3 restaurants near Central Park"
       end
 
       return txt_contents

@@ -1,44 +1,43 @@
 module TextHelper
 
   WELCOME_TXT ="Text us:\n" \
-               "1. Bus 2 at 178 (for Madison bus timings)\n" \
+               "1. Bus 2 at 178 (for real-time bus info in Madison)\n" \
                "2. From skydeck chicago to navy pier by car (for directions)\n" \
                "3. Find 3 bars in boston (for nearby places)\n" \
-               "For more details, text 'More #feature'; Eg:'More 1' for Bus Timings"
+               "For more details, text 'More #feature'. E.g., 'More 2' for directions"
 
   THANK_YOU = "Thank you! We will get back to you shortly with the information!"
   
   #Example Usage Format : 
-  BUS_USAGE_FORMAT =    "Supported formats for real-time bus info for Madison:\n" \
-			"1. Bus 15 10 at 178 - Timings for buses 15 & 10 at stop-id 178\n" \
-			"2. Bus at 2146 - Timings for the next 10 buses at stop-id 2146\n" \
-			"3. Bus 2 at university at orchard -  Timings for bus 2 at bus stations near University & Orchard"
+  BUS_USAGE_FORMAT =   "To get real-time bus info in Madison, WI, text:\n" \
+			   "Bus (bus#) at (stop-id). Examples:\n" \
+			   "1. Bus 3 8 at 178 - info for buses 3 & 8 at stop-id 178\n" \
+			   "2. Bus at 2146 - info for the next 10 buses at stop-id 2146."
 
-  DRIVING_USAGE_FORMAT =   "To get directions, text:\n" \
-			   "From (location) to (location) by bike/car/walk.\n" \
+  DRIVING_USAGE_FORMAT =   "To get Google directions, text:\n" \
+			   "From (location) to (location) by bike/car/walk. Examples:\n" \
 			   "1. From 154 Buchanan street sfo to market street by bike\n" \
 			   "2. From Grand street brooklyn to 6 Avenue Manhattan. Default is public-transit if mode of transportation is not specified."
 
   PLACES_USAGE_FORMAT = "To find places nearby, text:\n" \
-			"Find (number) (type of place) in/near (location/zipcode).Eg.\n" \
+			"Find (number) (type of place) in/near (location/zipcode). Examples:\n" \
 			"1. Find 3 bars near 21 N Park street Madison WI\n" \
 			"2. Find 2 hair cuts in 98006\n" \
 			"3. Find parking near central park. Default number of results is 5 if not specified."
 
-  INVALID_MORE_MSG_FORMAT_1 = "Invalid format.\n" \
-		   	      "To view more usage formats in each feature, txt 'More feature-number'; Ex: 'More 1' for Bus Directions!"
+  INVALID_MORE_MSG_FORMAT_1 = "Dagnabbit! Can't recognize. Wanna know more about us? Text:\n1. More 1 for real-time bus info\n2. More 2 for Google directions\n3. More 3 for nearby places"
  
   INVALID_MORE_MSG_FORMAT_2 = "Uh-oh! Currently we support only 3 features. Watch out for more!"
  
-  RESULTS_NOT_FOUND = "Results not found."
+  RESULTS_NOT_FOUND = "Oops! Results not found."
   
-  ROUTES_NOT_FOUND = "Routes not found."
+  ROUTES_NOT_FOUND = "Uh-oh! Routes not found."
  
   UNIDENT_LOC = "Unidentified source/destination location. Please try again with city/state information."
 
-  INVALID_FORMAT_DIRECTIONS = "Invalid format. Usage:\nFrom (from-addr) to (to-addr) by car/bus/bike/walk.\nEg. From skydeck chicago to navy pier by car"
+  INVALID_FORMAT_DIRECTIONS = "Shoot! Can't recognize. Usage:\nFrom (from-addr) to (to-addr) by car/bus/bike/walk.\nEg. From skydeck chicago to navy pier by car"
 
-  INVALID_FORMAT_BUS = "Invalid format. Message format should be:\nBus (bus-numbers) at (stop-id).\nEg. Bus 2 19 at 178"
+  INVALID_FORMAT_BUS = "Snap! Can't recognize. Usage:\nBus (bus-numbers) at (stop-id). Eg. Bus 2 19 at 178 or Bus at 178"
  
   def welcome_text()
       return WELCOME_TXT 

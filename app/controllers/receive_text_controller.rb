@@ -42,7 +42,7 @@ class ReceiveTextController < ApplicationController
 	elsif feature_type == FUN_FEATURE
 	   txt_contents = get_fun_message(msg)
         else
-           txt_contents = ["Invalid format. ", welcome_text]
+           txt_contents = ["Snap! Can't recognize. ", welcome_text]
         end
 
         send_message(txt_contents, from_number)
@@ -57,7 +57,11 @@ class ReceiveTextController < ApplicationController
 
   def get_more_help(msg="")
       txt_contents = []
-      msg_contents = msg.split('MORE')[1].strip()
+      msg_contents = msg.split('MORE')[1]
+      if msg_contents.nil? 
+		txt_contents << TextHelper.get_more_msg(4)
+		return txt_contents
+      end 
       msg_contents = msg_contents.split()[0][/\d+/]
       number = msg_contents.to_i
       if number == 1
